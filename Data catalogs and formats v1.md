@@ -165,45 +165,45 @@ This *hands-on example* is based on AWS official tutorials [o^Build an Apache Ic
 These resources (official docs and engineering posts) provide in-depth guidance. They also document current support levels: for example, Athena announced Iceberg SQL support in Nov 2022 [o^Build an Apache Iceberg data lake using Amazon Athena, Amazon EMR, and AWS Glue │ AWS Big Data Blog](https://aws.amazon.com/blogs/big-data/build-an-apache-iceberg-data-lake-using-amazon-athena-amazon-emr-and-aws-glue/#:~:text=Iceberg%20on%20AWS%20Glue,0), Redshift preview in 2023, and Databricks Iceberg support as preview in 2025 [o^Databricks Eliminates Table Format Lock–in and Adds Capabilities for Business Users with Unity Catalog Advancements – Databricks](https://www.databricks.com/company/newsroom/press-releases/databricks-eliminates-table-format-lock-and-adds-capabilities#:~:text=with%20powerful%20new%20capabilities,discovery%20is%20enhanced%20for%20business). Always check version compatibility (Spark 3.2+/Iceberg 1.1+, Athena engine versions, etc.) for ACID features. 
 
 ```mermaid
-graph LR
+---
+config:
+  theme: dark
+---
+flowchart LR
   subgraph Storage
-    S3[S3 (Object Store)]
+    S3["S3 (Object Store)"]
   end
   subgraph TableFormat
-    IcebergTable[Iceberg Table (metadata + data files)]
+    IcebergTable["Iceberg Table (metadata + data files)"]
   end
   subgraph Catalogs
-    Glue[Glue Data Catalog (Hive Metastore)]
-    Unity[Unity Catalog (Delta/Iceberg)]
-    Polaris[Polaris Catalog]
+    Glue["Glue Data Catalog (Hive Metastore)"]
+    Unity["Unity Catalog (Delta/Iceberg)"]
+    Polaris["Polaris Catalog"]
   end
   subgraph QueryEngines
-    Athena[Athena]
-    Spark[Apache Spark/EMR]
-    Trino[Trino/Presto/Starburst]
-    Redshift[Redshift]
-    Databricks[Databricks]
-    Snowflake[Snowflake]
+    Athena["Athena"]
+    Spark["Apache Spark/EMR"]
+    Trino["Trino/Presto/Starburst"]
+    Redshift["Redshift"]
+    Databricks["Databricks"]
+    Snowflake["Snowflake"]
   end
-
   S3 --> IcebergTable
   IcebergTable --> S3
-
   Glue --> IcebergTable
   Unity --> IcebergTable
   Polaris --> IcebergTable
-
   Athena --> Glue
   Spark --> Glue
   Redshift --> Glue
-
   Databricks --> Unity
   Trino --> Glue
   Trino --> Unity
   Trino --> Polaris
-
   Spark --> Polaris
   Snowflake --> Polaris
+
 ```
 
 This diagram shows how data files (Parquet on S3) are organized by the Iceberg table format and tracked by a catalog. Query engines (Athena, Spark, Trino, Redshift, Databricks/Spark, Snowflake) consult a catalog (Glue, Unity, Astra) to find tables, then read the data via the Iceberg metadata. 
