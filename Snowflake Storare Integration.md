@@ -86,11 +86,11 @@ CREATE OR REPLACE STAGE <STAGE_NAME>
 
 ```mermaid
 graph TD
-  A[Snowflake Storage Integration<br/>(references AWS Role ARN)] --> B[Snowflake Stage<br/>(URL to s3://...)]
-  B --> C[User issues COPY INTO / LIST / PUT]
-  C --> D[Snowflake calls AWS STS AssumeRole<br/>(Principal=SnowflakeUserARN, ExternalId)]
-  D --> E[AWS validates trust policy + ExternalId<br/>and returns short-lived creds]
-  E --> F[Snowflake uses creds to access<br/>s3://<BUCKET_NAME_REDACTED>/... per policy]
+  A["Snowflake Storage Integration<br/>(references AWS Role ARN)"] --> B["Snowflake Stage<br/>(URL to s3://...)"]
+  B --> C["User issues COPY INTO / LIST / PUT"]
+  C --> D["Snowflake calls AWS STS AssumeRole<br/>(Principal=SnowflakeUserARN, ExternalId)"]
+  D --> E["AWS validates trust policy + ExternalId<br/>and returns short-lived creds"]
+  E --> F["Snowflake uses creds to access<br/>s3://<BUCKET_NAME_REDACTED>/... per policy"]
 ```
 
 ## Security handshake (detail)
