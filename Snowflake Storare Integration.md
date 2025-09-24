@@ -1,153 +1,98 @@
-## Pinterest-Blumenau Snowflake Storage Integration: Step-by-Step Process
+# Pinterest-Blumenau Snowflake Storage Integration
 
-### **Step 1: secopsteam0 Creates AWS Infrastructure (terraform-control-repo)**
+## Overview
+This integration allows Snowflake to securely access Pinterest's `pinterest-blumenau` S3 bucket through AWS IAM role assumption.
 
-**What secopsteam0 provides:**
+## Architecture Flow
 
-1. **AWS IAM Role** (`SnowflakeStorageIntegration_pinterest-blumenau`)
-   - **Trust Policy**: Allows Snowflake's IAM user to assume this role
-   - **Principal**: `arn:aws:iam::343182919852:user/oqyl-s-v2st0658` (Snowflake's user)`
-   - **External ID**: `PINTERESTIT_SFCRole=4_XSO0HbFFydOsgyU3TT9gwnsWA1w=`
-
-2. **AWS IAM Policy** (attached to the role)
-   - **S3 Permissions**: GetObject, PutObject, DeleteObject, ListBucket
-   - **S3 Resources**: `arn:aws:s3:::pinterest-blumenau` and `arn:aws:s3:::pinterest-blumenau/*`
-
-3. **S3 Bucket Policy** (on `pinterest-blumenau` bucket)
-   - **Cross-account access** for Pinterest's main account (`998131032990`)
-   - **Security**: SSL-only, no public access
-
-### **Step 2: snowflaketeam Creates Snowflake Storage Integration**
-
-**What snowflaketeam provides:**
-
-1. **Storage Integration** (`S3_PINTEREST_PROD_BLUMENAU`)
-   ```sql
-   CREATE STORAGE INTEGRATION S3_PINTEREST_PROD_BLUMENAU
-       TYPE=EXTERNAL_STAGE
-       STORAGE_PROVIDER='S3'
-       STORAGE_AWS_ROLE_ARN='arn:aws:iam::621763355519:role/SnowflakeStorageIntegration_pinterest-blumenau'
-       ENABLED=true
-       STORAGE_ALLOWED_LOCATIONS=('s3://pinterest-blumenau/');
-   ```
-
-2. **Snowflake Stages** (multiple file formats)
-   - `PINTEREST_BLUMENAU_STAGE` (TSV)
-   - `PINTEREST_BLUMENAU_STAGE_CSV` (CSV)
-   - `PINTEREST_BLUMENAU_STAGE_PARQUET` (Parquet)
-   - etc.
-
-3. **Snowflake Role** (`S3_PINTEREST_PROD_BLUMENAU_AGENT_ROLE`)
-   - Permissions to use the stages
-   - Access to warehouse, database, schema
-
-### **Step 3: The Complete Flow**
-
-```
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│                           PINTEREST-BLUMENAU FLOW                              │
-└─────────────────────────────────────────────────────────────────────────────────┘
-
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   secopsteam0   │    │  snowflaketeam  │    │    Snowflake    │    │   AWS S3       │
-│   (terraform)   │    │   (SQL DDLs)    │    │   (Runtime)     │    │  (Storage)     │
-└─────────────────┘    └─────────────────┘    └─────────────────┘    └─────────────────┘
-         │                       │                       │                       │
-         │ 1. Creates AWS        │                       │                       │
-         │    IAM Role           │                       │                       │
-         ├──────────────────────►│                       │                       │
-         │                       │                       │                       │
-         │                       │ 2. Creates Storage   │                       │
-         │                       │    Integration        │                       │
-         │                       ├──────────────────────►│                       │
-         │                       │                       │                       │
-         │                       │                       │ 3. Assumes AWS Role   │
-         │                       │                       ├──────────────────────►│
-         │                       │                       │                       │
-         │                       │                       │ 4. COPY INTO command  │
-         │                       │                       ├──────────────────────►│
-         │                       │                       │                       │
-         │                       │                       │ 5. Reads/Writes S3    │
-         │                       │                       │    files              │
-         │                       │                       │◄──────────────────────┤
+```mermaid
+graph TD
+    A[secopsteam0<br/>Terraform] --> B[AWS IAM Role<br/>SnowflakeStorageIntegration_pinterest-blumenau]
+    B --> C[S3 Bucket<br/>pinterest-blumenau]
+    
+    D[snowflaketeam<br/>SQL DDLs] --> E[Snowflake Storage Integration<br/>S3_PINTEREST_PROD_BLUMENAU]
+    E --> F[Snowflake Stages<br/>@pinterest-blumenau-stage]
+    
+    G[Snowflake Runtime] --> H[Assumes AWS IAM Role]
+    H --> I[Accesses S3 Bucket]
+    
+    B -.->|Trust Policy| H
+    E -.->|References| B
+    F -.->|Uses| E
+    I -.->|Reads/Writes| C
 ```
 
-### **Step 4: How COPY INTO Works**
+## Step-by-Step Process
 
-When you run:
+### 1. secopsteam0 Creates AWS Infrastructure
+```terraform
+# AWS IAM Role with trust policy
+resource "aws_iam_role" "SnowflakeStorageIntegration_pinterest-blumenau" {
+  assume_role_policy = {
+    "Principal": {
+      "AWS": "arn:aws:iam::343182919852:user/oqyl-s-v2st0658"
+    },
+    "Condition": {
+      "StringEquals": {
+        "sts:ExternalId": "PINTERESTIT_SFCRole=4_XSO0HbFFydOsgyU3TT9gwnsWA1w="
+      }
+    }
+  }
+}
+```
+
+### 2. snowflaketeam Creates Snowflake Integration
 ```sql
-COPY INTO @pinterest-blumenau-stage/myfile.csv
-FROM (SELECT * FROM my_table)
-FILE_FORMAT = (TYPE = 'CSV');
+-- Storage Integration
+CREATE STORAGE INTEGRATION S3_PINTEREST_PROD_BLUMENAU
+    TYPE=EXTERNAL_STAGE
+    STORAGE_PROVIDER='S3'
+    STORAGE_AWS_ROLE_ARN='arn:aws:iam::621763355519:role/SnowflakeStorageIntegration_pinterest-blumenau'
+    ENABLED=true
+    STORAGE_ALLOWED_LOCATIONS=('s3://pinterest-blumenau/');
+
+-- Snowflake Stage
+CREATE STAGE PINTEREST_BLUMENAU_STAGE
+    FILE_FORMAT = TSV_FORMAT
+    STORAGE_INTEGRATION = S3_PINTEREST_PROD_BLUMENAU
+    URL = 's3://pinterest-blumenau';
 ```
 
-**The process:**
-
-1. **Snowflake** uses the `S3_PINTEREST_PROD_BLUMENAU` storage integration
-2. **Snowflake** assumes the AWS IAM role `SnowflakeStorageIntegration_pinterest-blumenau`
-3. **Snowflake** uses the assumed role credentials to access `s3://pinterest-blumenau/`
-4. **Snowflake** performs the COPY operation (read/write files)
-
-### **Step 5: Security & Trust Chain**
-
-```
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│                              SECURITY FLOW                                     │
-└─────────────────────────────────────────────────────────────────────────────────┘
-
-AWS Account 621763355519 (Partner Data Sharing)
-├── IAM Role: SnowflakeStorageIntegration_pinterest-blumenau
-│   ├── Trust Policy: Allows Snowflake IAM user
-│   ├── External ID: PINTERESTIT_SFCRole=4_XSO0HbFFydOsgyU3TT9gwnsWA1w=
-│   └── Permissions: S3 access to pinterest-blumenau bucket
-│
-Snowflake Account 343182919852
-├── IAM User: oqyl-s-v2st0658
-│   └── Can assume Pinterest's IAM role with correct External ID
-│
-Snowflake Database
-├── Storage Integration: S3_PINTEREST_PROD_BLUMENAU
-│   └── References AWS IAM role ARN
-├── Stages: @pinterest-blumenau-stage
-│   └── Uses storage integration
-└── COPY INTO commands
-    └── Uses stages to access S3
-```
-
-### **Step 6: What Each Team Provides**
-
-| Team | Provides | Purpose |
-|------|----------|---------|
-| **secopsteam0** | AWS IAM Role + Policy<br/>S3 Bucket Policy<br/>Trust relationship | Allows Snowflake to access S3 |
-| **snowflaketeam** | Storage Integration<br/>Snowflake Stages<br/>Snowflake Roles | Configures Snowflake to use AWS resources |
-
-### **Step 7: Usage Example**
-
+### 3. Usage Example
 ```sql
--- Use the stage created by snowflaketeam
+-- Copy data to S3 via Snowflake stage
 COPY INTO @pinterest-blumenau-stage/data/my_table/
 FROM (SELECT * FROM my_source_table)
 FILE_FORMAT = (TYPE = 'PARQUET');
 
--- List files in the stage
+-- List files in stage
 LIST @pinterest-blumenau-stage/data/my_table/;
 ```
 
+## Security Flow
 
-[1 tool called]
+```mermaid
+sequenceDiagram
+    participant SF as Snowflake
+    participant AWS as AWS IAM
+    participant S3 as S3 Bucket
+    
+    SF->>AWS: Assume Role Request<br/>+ External ID
+    AWS->>AWS: Validate Trust Policy
+    AWS->>SF: Return Temporary Credentials
+    SF->>S3: Access pinterest-blumenau<br/>using credentials
+    S3->>SF: Return S3 data
+```
 
-## Summary
+## Components Summary
 
-**secopsteam0** created the AWS infrastructure that allows Snowflake to access the `pinterest-blumenau` S3 bucket through a secure IAM role assumption process.
+| Component | Created By | Purpose |
+|-----------|------------|---------|
+| AWS IAM Role | secopsteam0 | Allows Snowflake to access S3 |
+| S3 Bucket Policy | secopsteam0 | Cross-account S3 permissions |
+| Storage Integration | snowflaketeam | Snowflake configuration for AWS |
+| Snowflake Stages | snowflaketeam | User-facing S3 access points |
 
-**snowflaketeam** created the Snowflake storage integration and stages that use this AWS infrastructure.
-
-**The result**: You can now use `COPY INTO @pinterest-blumenau-stage/` commands in Snowflake, which will automatically:
-1. Assume the AWS IAM role created by secopsteam0
-2. Access the S3 bucket with the proper permissions
-3. Perform the data transfer operations
-
-The key components are:
-- **AWS IAM Role**: `SnowflakeStorageIntegration_pinterest-blumenau` (created by secopsteam0)
-- **Snowflake Storage Integration**: `S3_PINTEREST_PROD_BLUMENAU` (created by snowflaketeam)
-- **Snowflake Stage**: `@pinterest-blumenau-stage` (created by snowflaketeam)
+## Key Files
+- **Terraform**: `terraform-control-repo/subaccounts/partner_data_sharing_621763355519/iam/roles/SnowflakeStorageIntegration_pinterest-blumenau.tf`
+- **SQL**: `spinner-workflows/dags/soxpii_native_tier_3_0/itedp/snowflake-deploy/sql/05_Misc_Deployments/20250327_BLUMENAU_AGENT_ROLE_FIX.sql`
