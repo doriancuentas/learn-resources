@@ -1,98 +1,142 @@
-# Pinterest-Blumenau Snowflake Storage Integration
+```markdown
+# AWS + Snowflake Storage Integration — Security Basics (Terraform, Roles, Policies)
 
-## Overview
-This integration allows Snowflake to securely access Pinterest's `pinterest-blumenau` S3 bucket through AWS IAM role assumption.
+## What each component is and how they identify each other
 
-## Architecture Flow
+- **AWS IAM Role (target role)**: An identity Snowflake assumes to access your S3. Identified by its ARN (`arn:aws:iam::<AWS_ACCOUNT_ID>:role/<ROLE_NAME>`).
+- **Trust Policy (who can assume the role?)**: Attached to the role. Lets a specific external principal (Snowflake’s IAM user) assume the role, but only when a correct `ExternalId` is supplied.
+- **Permissions Policy (what can the role do?)**: Attached to the role. Grants S3 permissions (e.g., `GetObject`, `PutObject`, `ListBucket`) on specific buckets/prefixes.
+- **Snowflake Storage Integration**: A Snowflake object that references your AWS role ARN and restricts S3 locations. Your stages use this integration.
+- **Snowflake Stage**: A Snowflake object (e.g., `@my_stage`) bound to the storage integration and a bucket/prefix URL.
 
-```mermaid
-graph TD
-    A[secopsteam0<br/>Terraform] --> B[AWS IAM Role<br/>SnowflakeStorageIntegration_pinterest-blumenau]
-    B --> C[S3 Bucket<br/>pinterest-blumenau]
-    
-    D[snowflaketeam<br/>SQL DDLs] --> E[Snowflake Storage Integration<br/>S3_PINTEREST_PROD_BLUMENAU]
-    E --> F[Snowflake Stages<br/>@pinterest-blumenau-stage]
-    
-    G[Snowflake Runtime] --> H[Assumes AWS IAM Role]
-    H --> I[Accesses S3 Bucket]
-    
-    B -.->|Trust Policy| H
-    E -.->|References| B
-    F -.->|Uses| E
-    I -.->|Reads/Writes| C
-```
+Identity linking:
+- Snowflake Integration → references AWS Role ARN.
+- AWS Role Trust Policy → references Snowflake IAM User ARN, requires `ExternalId`.
+- Stage → references Integration → references Role → accesses S3.
 
-## Step-by-Step Process
+## Why “Snowflake IAM user ARN + ExternalId” is secure enough
 
-### 1. secopsteam0 Creates AWS Infrastructure
+- Snowflake calls AWS STS `AssumeRole` with:
+  - Principal = Snowflake IAM user ARN (must match the trust policy).
+  - `ExternalId` (shared secret set in the trust policy).
+- AWS validates both before issuing short‑lived credentials scoped by the role’s permissions policy.
+- Prevents “confused deputy”: even if someone knows the role ARN, they cannot assume it without both the Snowflake user ARN AND the exact `ExternalId`.
+
+## Minimal Terraform (obfuscated)
+
 ```terraform
-# AWS IAM Role with trust policy
-resource "aws_iam_role" "SnowflakeStorageIntegration_pinterest-blumenau" {
-  assume_role_policy = {
-    "Principal": {
-      "AWS": "arn:aws:iam::343182919852:user/oqyl-s-v2st0658"
-    },
-    "Condition": {
-      "StringEquals": {
-        "sts:ExternalId": "PINTERESTIT_SFCRole=4_XSO0HbFFydOsgyU3TT9gwnsWA1w="
-      }
-    }
-  }
+# Role (WHO can assume) + Permissions (WHAT it can do)
+resource "aws_iam_role" "snowflake_s3_access" {
+  name               = "<ROLE_NAME>"
+  assume_role_policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Effect": "Allow",
+    "Principal": { "AWS": "arn:aws:iam::<SNOWFLAKE_ACCOUNT_ID>:user/<SNOWFLAKE_USER_NAME>" },
+    "Action": "sts:AssumeRole",
+    "Condition": { "StringEquals": { "sts:ExternalId": "<EXTERNAL_ID_REDACTED>" } }
+  }]
+}
+POLICY
+}
+
+resource "aws_iam_policy" "snowflake_s3_permissions" {
+  name   = "<ROLE_POLICY_NAME>"
+  policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Sid": "S3Access",
+    "Effect": "Allow",
+    "Action": [ "s3:GetObject", "s3:PutObject", "s3:DeleteObject", "s3:ListBucket", "s3:GetBucketLocation" ],
+    "Resource": [
+      "arn:aws:s3:::<BUCKET_NAME_REDACTED>",
+      "arn:aws:s3:::<BUCKET_NAME_REDACTED>/*"
+    ]
+  }]
+}
+POLICY
+}
+
+resource "aws_iam_policy_attachment" "attach" {
+  name       = "<ATTACH_NAME>"
+  roles      = [aws_iam_role.snowflake_s3_access.name]
+  policy_arn = aws_iam_policy.snowflake_s3_permissions.arn
 }
 ```
 
-### 2. snowflaketeam Creates Snowflake Integration
+Snowflake SQL (obfuscated):
 ```sql
--- Storage Integration
-CREATE STORAGE INTEGRATION S3_PINTEREST_PROD_BLUMENAU
-    TYPE=EXTERNAL_STAGE
-    STORAGE_PROVIDER='S3'
-    STORAGE_AWS_ROLE_ARN='arn:aws:iam::621763355519:role/SnowflakeStorageIntegration_pinterest-blumenau'
-    ENABLED=true
-    STORAGE_ALLOWED_LOCATIONS=('s3://pinterest-blumenau/');
+-- Storage Integration (references AWS Role ARN; restricts S3 URL scope)
+CREATE OR REPLACE STORAGE INTEGRATION <INTEGRATION_NAME>
+  TYPE = EXTERNAL_STAGE
+  STORAGE_PROVIDER = 'S3'
+  STORAGE_AWS_ROLE_ARN = 'arn:aws:iam::<AWS_ACCOUNT_ID>:role/<ROLE_NAME>'
+  ENABLED = TRUE
+  STORAGE_ALLOWED_LOCATIONS = ('s3://<BUCKET_NAME_REDACTED>/<PREFIX_OPTIONAL>/');
 
--- Snowflake Stage
-CREATE STAGE PINTEREST_BLUMENAU_STAGE
-    FILE_FORMAT = TSV_FORMAT
-    STORAGE_INTEGRATION = S3_PINTEREST_PROD_BLUMENAU
-    URL = 's3://pinterest-blumenau';
+-- Stage (binds to integration + bucket URL)
+CREATE OR REPLACE STAGE <STAGE_NAME>
+  STORAGE_INTEGRATION = <INTEGRATION_NAME>
+  URL = 's3://<BUCKET_NAME_REDACTED>/<PREFIX_OPTIONAL>/'
+  FILE_FORMAT = (TYPE = CSV);
 ```
 
-### 3. Usage Example
-```sql
--- Copy data to S3 via Snowflake stage
-COPY INTO @pinterest-blumenau-stage/data/my_table/
-FROM (SELECT * FROM my_source_table)
-FILE_FORMAT = (TYPE = 'PARQUET');
+## End‑to‑end flow (high level)
 
--- List files in stage
-LIST @pinterest-blumenau-stage/data/my_table/;
+```mermaid
+graph TD
+  A[Snowflake Storage Integration<br/>(references AWS Role ARN)] --> B[Snowflake Stage<br/>(URL to s3://...)]
+  B --> C[User issues COPY INTO / LIST / PUT]
+  C --> D[Snowflake calls AWS STS AssumeRole<br/>(Principal=SnowflakeUserARN, ExternalId)]
+  D --> E[AWS validates trust policy + ExternalId<br/>and returns short-lived creds]
+  E --> F[Snowflake uses creds to access<br/>s3://<BUCKET_NAME_REDACTED>/... per policy]
 ```
 
-## Security Flow
+## Security handshake (detail)
 
 ```mermaid
 sequenceDiagram
-    participant SF as Snowflake
-    participant AWS as AWS IAM
-    participant S3 as S3 Bucket
-    
-    SF->>AWS: Assume Role Request<br/>+ External ID
-    AWS->>AWS: Validate Trust Policy
-    AWS->>SF: Return Temporary Credentials
-    SF->>S3: Access pinterest-blumenau<br/>using credentials
-    S3->>SF: Return S3 data
+  participant User as User/Job
+  participant SF as Snowflake
+  participant STS as AWS STS
+  participant S3 as Amazon S3
+
+  User->>SF: COPY INTO @<STAGE_NAME> ...
+  SF->>STS: AssumeRole(RoleArn, ExternalId, Principal=SnowflakeUserARN)
+  STS->>STS: Check trust policy (Principal + ExternalId)
+  STS-->>SF: Temporary credentials (scoped to role permissions)
+  SF->>S3: Access s3://<BUCKET_NAME_REDACTED>/... with temp creds
+  S3-->>SF: Data / write confirmations
+  SF-->>User: COPY completes
 ```
 
-## Components Summary
+## Role vs Policy (in this setup)
 
-| Component | Created By | Purpose |
-|-----------|------------|---------|
-| AWS IAM Role | secopsteam0 | Allows Snowflake to access S3 |
-| S3 Bucket Policy | secopsteam0 | Cross-account S3 permissions |
-| Storage Integration | snowflaketeam | Snowflake configuration for AWS |
-| Snowflake Stages | snowflaketeam | User-facing S3 access points |
+- **Role**: The identity Snowflake temporarily becomes inside AWS (defined once, reusable).
+- **Trust Policy** (on the role): WHO may assume the role (Snowflake IAM user) + under WHAT condition (correct `ExternalId`).
+- **Permissions Policy** (attached to the role): WHAT actions the role can perform (which S3 buckets/paths, which verbs).
 
-## Key Files
-- **Terraform**: `terraform-control-repo/subaccounts/partner_data_sharing_621763355519/iam/roles/SnowflakeStorageIntegration_pinterest-blumenau.tf`
-- **SQL**: `spinner-workflows/dags/soxpii_native_tier_3_0/itedp/snowflake-deploy/sql/05_Misc_Deployments/20250327_BLUMENAU_AGENT_ROLE_FIX.sql`
+## Why this is secure
+
+- No static AWS keys in Snowflake or code.
+- Short‑lived credentials via STS.
+- Least privilege via S3‑scoped permissions.
+- Dual binding (Principal ARN + ExternalId) prevents confused‑deputy attacks.
+- Snowflake stage restricts allowed S3 paths; integration restricts allowed locations.
+
+## Using the stage (example)
+
+```sql
+COPY INTO @<STAGE_NAME>/exports/dt=2025-09-24/
+FROM (SELECT * FROM <DB>.<SCHEMA>.<TABLE>)
+FILE_FORMAT = (TYPE = PARQUET);
+```
+
+Glossary
+- **ARN**: Amazon Resource Name (unique identifier for AWS entities).
+- **ExternalId**: Shared secret in the trust policy; required in AssumeRole calls.
+- **STS**: AWS Security Token Service; issues scoped, short‑lived credentials.
+- **Stage**: Snowflake abstraction for external storage bound to an integration.
+```
