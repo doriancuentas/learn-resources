@@ -1,4 +1,3 @@
-```markdown
 # AWS + Snowflake Storage Integration — Security Basics (Terraform, Roles, Policies)
 
 ## What each component is and how they identify each other
@@ -139,4 +138,3 @@ Glossary
 - **ExternalId**: Shared secret in the trust policy; required in AssumeRole calls.
 - **STS**: AWS Security Token Service; issues scoped, short‑lived credentials.
 - **Stage**: Snowflake abstraction for external storage bound to an integration.
-```
