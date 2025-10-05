@@ -163,7 +163,7 @@ flowchart LR
     end
 
     subgraph New["New Account (B)"]
-        CB[1. Create backend (S3 + DynamoDB)]
+        CB[[1. Create backend (S3 + DynamoDB)[]
         UP[2. Upload secrets]
         TV[3. Update terraform.tfvars]
         APPLY[4. terraform apply]
