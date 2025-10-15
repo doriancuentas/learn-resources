@@ -28,7 +28,7 @@ graph TD
     F --> H[Need for SQL interface]
     G --> H
     H --> I[Apache Hive 2008:<br/>SQL on Hadoop]
-    
+
     style A fill:#ffcccc
     style B fill:#fff4cc
     style I fill:#90EE90
@@ -53,27 +53,27 @@ graph TD
 
 ```mermaid
 graph TB
-    subgraph "Shared-Nothing Presto/Spark"
+    subgraph SN["Shared-Nothing Presto/Spark"]
         SN1["Node 1<br/>CPU + Memory + Disk<br/>Partition A"]
         SN2["Node 2<br/>CPU + Memory + Disk<br/>Partition B"]
         SN3["Node 3<br/>CPU + Memory + Disk<br/>Partition C"]
-        
+
         SN1 <-.->|Network only| SN2
         SN2 <-.->|Network only| SN3
         SN3 <-.->|Network only| SN1
     end
-    
-    subgraph "Shared-Disk Traditional"
+
+    subgraph SD["Shared-Disk Traditional"]
         SD1["Node 1<br/>CPU + Memory"]
         SD2["Node 2<br/>CPU + Memory"]
         SD3["Node 3<br/>CPU + Memory"]
         DISK[("Shared<br/>Disk<br/>Array")]
-        
+
         SD1 --> DISK
         SD2 --> DISK
         SD3 --> DISK
     end
-    
+
     style SN1 fill:#99ff99
     style SN2 fill:#99ff99
     style SN3 fill:#99ff99
@@ -90,7 +90,7 @@ graph TB
 3. **Columnar storage**: Read only needed columns
 4. **MPP architecture**: True parallelism without batch job scheduling
 
-**Tradeoff**: 
+**Tradeoff**:
 - **Shared-Nothing**: Scale-out easily, but data must be partitioned correctly
 - **Shared-Disk**: Simpler data management, but shared storage becomes bottleneck
 
@@ -103,13 +103,13 @@ graph TB
 ```mermaid
 graph LR
     A[Physical Reality:<br/>Files in S3/HDFS] -->|Gap| B[Logical View:<br/>Tables with Schema]
-    
+
     B -->|Who bridges this?| C{Metastore}
-    
+
     C --> D[Stores:<br/>• Table names<br/>• Column types<br/>• Partition mappings<br/>• File locations<br/>• Storage format]
-    
+
     D --> E[Without metastore:<br/>Users must know exact<br/>S3 paths, formats,<br/>partition structure]
-    
+
     style A fill:#ff9999
     style B fill:#99ccff
     style C fill:#ffff99
@@ -129,21 +129,21 @@ erDiagram
     TBLS ||--o{ PARTITIONS : has
     TBLS ||--|| SDS : "storage_descriptor"
     PARTITIONS ||--|| SDS : "storage_descriptor"
-    
+
     TBLS {
         bigint TBL_ID PK
         string TBL_NAME
         string DB_NAME
         bigint SD_ID FK
     }
-    
+
     PARTITIONS {
         bigint PART_ID PK
         bigint TBL_ID FK
         string PART_NAME
         bigint SD_ID FK
     }
-    
+
     SDS {
         bigint SD_ID PK
         string LOCATION
@@ -174,28 +174,12 @@ erDiagram
 ```mermaid
 timeline
     title Query Engine Evolution
-    2004 : MapReduce Paper
-         : Google publishes landmark paper
-    2008 : Hive
-         : Facebook creates SQL on Hadoop
-         : Latency: Minutes to hours
-         : Reason: Translate SQL → MapReduce jobs
-    2012 : Presto
-         : Facebook creates interactive SQL
-         : Latency: Seconds
-         : Reason: Ad-hoc analytics, data scientists waiting
-    2014 : Spark SQL
-         : Berkeley creates unified engine
-         : Latency: Seconds to minutes
-         : Reason: Iterative ML workloads on same data
-    2019 : Trino
-         : Presto fork with governance change
-         : Latency: Seconds
-         : Reason: Continue Presto vision independently
-    2020 : Delta Lake
-         : Databricks adds ACID to data lakes
-         : Latency: Seconds + transactions
-         : Reason: Data lake reliability problems
+    2004 : MapReduce Paper : Google publishes landmark paper
+    2008 : Hive : Facebook creates SQL on Hadoop : Latency: Minutes to hours : Reason: Translate SQL → MapReduce jobs
+    2012 : Presto : Facebook creates interactive SQL : Latency: Seconds : Reason: Ad-hoc analytics, data scientists waiting
+    2014 : Spark SQL : Berkeley creates unified engine : Latency: Seconds to minutes : Reason: Iterative ML workloads on same data
+    2019 : Trino : Presto fork with governance change : Latency: Seconds : Reason: Continue Presto vision independently
+    2020 : Delta Lake : Databricks adds ACID to data lakes : Latency: Seconds + transactions : Reason: Data lake reliability problems
 ```
 
 ### MapReduce Limitations (Why Spark/Presto Exist)
@@ -208,18 +192,18 @@ sequenceDiagram
     participant Job1 as MapReduce Job 1
     participant HDFS
     participant Job2 as MapReduce Job 2
-    
+
     Job1->>HDFS: Write intermediate results
     Note over HDFS: Full disk serialization
     Job1->>Job1: Job completes, JVM exits
-    
+
     Note over Job1,Job2: No data reuse
-    
+
     Job2->>HDFS: Read intermediate results
     Note over HDFS: Full disk deserialization
     Job2->>Job2: Process data
     Job2->>HDFS: Write final results
-    
+
     Note over Job1,Job2: Total: 4 disk I/Os for 2 jobs
 ```
 
@@ -246,21 +230,21 @@ sequenceDiagram
 
 ```mermaid
 graph TB
-    subgraph "MapReduce"
+    subgraph MR["MapReduce"]
         MR1[Read HDFS] --> MR2[Map]
         MR2 --> MR3[Write to Disk]
         MR3 --> MR4[Read from Disk]
         MR4 --> MR5[Reduce]
         MR5 --> MR6[Write to Disk]
     end
-    
-    subgraph "Spark"
+
+    subgraph SP["Spark"]
         SP1[Read HDFS] --> SP2[Transformation 1<br/>In Memory]
         SP2 --> SP3[Transformation 2<br/>In Memory]
         SP3 --> SP4[Transformation 3<br/>In Memory]
         SP4 --> SP5[Action: Write Result]
     end
-    
+
     style MR3 fill:#ffcccc
     style MR4 fill:#ffcccc
     style MR6 fill:#ffcccc
@@ -284,15 +268,15 @@ graph LR
     A[Presto Coordinator] --> B[Worker 1:<br/>Process Partition A]
     A --> C[Worker 2:<br/>Process Partition B]
     A --> D[Worker 3:<br/>Process Partition C]
-    
+
     B -->|Stream results| E[Final Aggregation]
     C -->|Stream results| E
     D -->|Stream results| E
-    
+
     E --> F[Return to User]
-    
+
     X[Worker 2 Fails] -.->|Entire query fails<br/>User re-runs| A
-    
+
     style X fill:#ffcccc
     style F fill:#90EE90
 ```
@@ -340,23 +324,23 @@ With partition discovery:
 ```mermaid
 graph TD
     START[New Partition Written<br/>to S3/HDFS] --> Q{Discovery Method?}
-    
+
     Q -->|1. Manual| M[Human/ETL runs:<br/>ALTER TABLE ADD PARTITION]
     Q -->|2. On-Demand| OD[User runs:<br/>MSCK REPAIR TABLE]
     Q -->|3. Automatic| AUTO[Metastore background<br/>process scans filesystem]
-    
+
     M --> M1[Metastore updated<br/>immediately]
     OD --> OD1[Scan filesystem once,<br/>update metastore]
     AUTO --> AUTO1[Scan every N minutes,<br/>update metastore]
-    
+
     M1 --> RESULT[Query can access partition]
     OD1 --> RESULT
     AUTO1 --> RESULT
-    
+
     M --> MCOST[Cost: Manual effort,<br/>can forget]
     OD --> ODCOST[Cost: Must remember<br/>to run repair]
     AUTO --> AUTOCOST[Cost: Metastore load,<br/>scan overhead]
-    
+
     style M fill:#ffcccc
     style OD fill:#ffff99
     style AUTO fill:#90EE90
@@ -392,14 +376,15 @@ Automatic Discovery Frequency:
 sequenceDiagram
     participant User
     participant Spark
+    participant HMS as Metastore
     participant S3
-    
+
     Note over User,S3: Traditional Hive Table Approach
     User->>Spark: spark.sql("SELECT * FROM table")
     Spark->>HMS: Get partition list
     HMS-->>Spark: Return registered partitions
     Spark->>S3: Read only those partitions
-    
+
     Note over User,S3: Spark Direct Read Approach
     User->>Spark: spark.read.parquet("s3://bucket/table/")
     Spark->>S3: LIST s3://bucket/table/
@@ -432,22 +417,22 @@ df = spark.read.option("basePath", "s3://bucket/table/").parquet("s3://bucket/ta
 
 ```mermaid
 graph TB
-    subgraph "Traditional Self-Managed"
+    subgraph SM["Traditional Self-Managed"]
         APP1[Spark Jobs] --> HMS[Hive Metastore<br/>Service]
         APP2[Presto Queries] --> HMS
         HMS --> DB[(MySQL RDS<br/>You Manage)]
-        
+
         MAINT[You Handle:<br/>• HA setup<br/>• Backups<br/>• Upgrades<br/>• Scaling]
     end
-    
-    subgraph "AWS Glue Catalog"
+
+    subgraph AG["AWS Glue Catalog"]
         APP3[Spark on EMR] --> GLUE[AWS Glue<br/>Catalog API]
         APP4[Athena] --> GLUE
         APP5[Redshift Spectrum] --> GLUE
-        
+
         GLUE --> MANAGED[AWS Manages:<br/>• Unlimited scalability<br/>• Automatic HA<br/>• Zero maintenance<br/>• Pay per API call]
     end
-    
+
     style HMS fill:#ffff99
     style DB fill:#ffcccc
     style GLUE fill:#90EE90
@@ -483,12 +468,12 @@ graph TD
     A --> C[Problem 2:<br/>Small files proliferation]
     A --> D[Problem 3:<br/>Schema evolution breaks readers]
     A --> E[Problem 4:<br/>No partition pruning stats]
-    
+
     B --> F[Delta Solution:<br/>Transaction log in Parquet]
     C --> G[Delta Solution:<br/>Auto-compaction]
     D --> H[Delta Solution:<br/>Schema enforcement + evolution]
     E --> I[Delta Solution:<br/>Data skipping with stats]
-    
+
     style B fill:#ffcccc
     style C fill:#ffcccc
     style D fill:#ffcccc
@@ -546,38 +531,38 @@ Transaction log entry:
 ```mermaid
 flowchart TD
     START[ETL Job Writes New Data] --> WRITE[Write to:<br/>s3://bucket/table/dt=2025-10-14/]
-    
+
     WRITE --> Q1{Metastore<br/>Type?}
-    
+
     Q1 -->|Hive Metastore| Q2{Partition<br/>Registration?}
     Q1 -->|Glue Catalog| GLUE[Glue Crawler runs<br/>or manual catalog]
     Q1 -->|Delta Lake| DELTA[Transaction log<br/>auto-updated]
-    
+
     Q2 -->|Manual| MAN[ALTER TABLE ADD PARTITION]
     Q2 -->|MSCK| MSCK[Run MSCK REPAIR TABLE]
     Q2 -->|Auto| AUTO[discover.partitions=true<br/>Background scan]
-    
+
     MAN --> META[Partition in Metastore]
     MSCK --> META
     AUTO --> META
     GLUE --> META
     DELTA --> DELTALOG[Partition in Transaction Log]
-    
+
     META --> QUERY[User Query:<br/>SELECT * WHERE dt='2025-10-14']
     DELTALOG --> QUERY
-    
+
     QUERY --> SPARK[Spark SQL Engine]
-    
+
     SPARK --> CHECK{Partition<br/>Exists?}
-    
+
     CHECK -->|Yes| PRUNE[Partition Pruning:<br/>Read only dt=2025-10-14]
     CHECK -->|No| ERROR[Error:<br/>Partition not found]
-    
+
     PRUNE --> READ[Read S3 Files:<br/>s3://bucket/table/dt=2025-10-14/]
     READ --> RESULT[Return Query Results]
-    
+
     ERROR --> FIX[Fix: Run MSCK or<br/>Add Partition]
-    
+
     style WRITE fill:#e1f5ff
     style META fill:#90EE90
     style DELTALOG fill:#90EE90
@@ -589,7 +574,7 @@ flowchart TD
 
 ```mermaid
 graph TB
-    subgraph "Hive on MapReduce (2008)"
+    subgraph H["Hive on MapReduce (2008)"]
         H1[SQL Query] --> H2[Parse to AST]
         H2 --> H3[Optimize Plan]
         H3 --> H4[Generate MapReduce Jobs]
@@ -598,11 +583,11 @@ graph TB
         H6 --> H7[Shuffle to Disk]
         H7 --> H8[Reduce Tasks]
         H8 --> H9[Write Results]
-        
+
         H_TIME[Total: 2-10 minutes]
     end
-    
-    subgraph "Spark SQL (2014)"
+
+    subgraph S["Spark SQL (2014)"]
         S1[SQL Query] --> S2[Parse to Logical Plan]
         S2 --> S3[Catalyst Optimizer]
         S3 --> S4[Physical Plan]
@@ -610,20 +595,20 @@ graph TB
         S5 --> S6[Execute in Memory]
         S6 --> S7[Pipeline Stages]
         S7 --> S8[Return Results]
-        
+
         S_TIME[Total: 5-60 seconds]
     end
-    
-    subgraph "Presto/Trino (2012)"
+
+    subgraph P["Presto/Trino (2012)"]
         P1[SQL Query] --> P2[Parse + Plan]
         P2 --> P3[Distributed Plan]
         P3 --> P4[Workers Stream Data]
         P4 --> P5[Pipelined Execution]
         P5 --> P6[Return Results]
-        
+
         P_TIME[Total: 1-10 seconds]
     end
-    
+
     style H7 fill:#ffcccc
     style H9 fill:#ffcccc
     style S6 fill:#90EE90
@@ -639,25 +624,25 @@ sequenceDiagram
     participant Optimizer
     participant HMS as Metastore
     participant S3
-    
+
     User->>SparkSQL: SELECT sum(sales)<br/>FROM table<br/>WHERE dt='2025-10-14'
-    
+
     SparkSQL->>Optimizer: Parse query
     Optimizer->>Optimizer: Detect partition filter:<br/>dt='2025-10-14'
-    
+
     Optimizer->>HMS: Get partitions matching:<br/>dt='2025-10-14'
     HMS-->>Optimizer: Partition metadata:<br/>location: s3://bucket/table/dt=2025-10-14/<br/>file_count: 10<br/>size: 500MB
-    
+
     Note over Optimizer: Decision: Read only 500MB<br/>instead of 100GB (all partitions)
-    
+
     Optimizer->>SparkSQL: Physical plan:<br/>Scan only 10 files
-    
+
     SparkSQL->>S3: Parallel read:<br/>s3://bucket/table/dt=2025-10-14/part-*.parquet
-    
+
     S3-->>SparkSQL: Data for 2025-10-14
-    
+
     SparkSQL->>User: Results (2 seconds)
-    
+
     Note over User,S3: Without pruning: 5 minutes<br/>With pruning: 2 seconds<br/>Speedup: 150x
 ```
 
@@ -670,20 +655,20 @@ sequenceDiagram
 ```mermaid
 graph TB
     START[Design a Query Engine] --> Q1{Primary<br/>Use Case?}
-    
+
     Q1 -->|Batch Analytics<br/>Overnight Jobs| HIVE[Hive on MapReduce<br/>2008-2014]
     Q1 -->|Iterative ML<br/>Graph Processing| SPARK[Spark<br/>2014+]
     Q1 -->|Interactive BI<br/>Ad-hoc Queries| PRESTO[Presto/Trino<br/>2012+]
     Q1 -->|Reliable Data Lake<br/>ACID needed| DELTA[Delta Lake<br/>2020+]
-    
+
     HIVE --> HIVE_CHOICE[Choices:<br/>✓ Fault tolerance<br/>✓ Works on commodity hardware<br/>✗ High latency acceptable]
-    
+
     SPARK --> SPARK_CHOICE[Choices:<br/>✓ In-memory caching<br/>✓ Unified batch+streaming<br/>✗ Higher memory needs]
-    
+
     PRESTO --> PRESTO_CHOICE[Choices:<br/>✓ Low latency priority<br/>✓ Federated queries<br/>✗ No fault tolerance]
-    
+
     DELTA --> DELTA_CHOICE[Choices:<br/>✓ Transaction log<br/>✓ ACID guarantees<br/>✗ Custom format]
-    
+
     style HIVE_CHOICE fill:#ffff99
     style SPARK_CHOICE fill:#99ff99
     style PRESTO_CHOICE fill:#99ccff
@@ -728,19 +713,10 @@ Cons:
 ```mermaid
 timeline
     title Metadata Management Evolution
-    2008 : Centralized HMS
-         : MySQL backend
-         : All engines depend on it
-    2015 : HMS bottleneck recognized
-         : Caching layers added
-         : HA setups common
-    2020 : Delta Lake / Iceberg
-         : Metadata in table
-         : Self-contained
-    2023 : Hybrid approaches
-         : Glue Catalog + HMS federation
-         : Unity Catalog (Databricks)
-         : Open Table Formats
+    2008 : Centralized HMS : MySQL backend : All engines depend on it
+    2015 : HMS bottleneck recognized : Caching layers added : HA setups common
+    2020 : Delta Lake / Iceberg : Metadata in table : Self-contained
+    2023 : Hybrid approaches : Glue Catalog + HMS federation : Unity Catalog (Databricks) : Open Table Formats
 ```
 
 ### Partition Discovery: When to Use What
@@ -900,21 +876,21 @@ timeline
 ```mermaid
 graph TD
     START{Your Primary<br/>Requirement} --> A{Latency?}
-    
+
     A -->|< 5 seconds| B{Fault<br/>Tolerance?}
     A -->|5-60 seconds| C{Workload<br/>Type?}
     A -->|> 60 seconds| D[Hive on MapReduce<br/>or Batch Spark]
-    
+
     B -->|Critical| SPARK[Spark SQL<br/>+ Hive Metastore]
     B -->|Can Re-run| PRESTO[Presto/Trino]
-    
+
     C -->|ML/Iterative| SPARK
     C -->|BI/Analytics| PRESTO
     C -->|ETL Pipeline| ETL{ACID<br/>Needed?}
-    
+
     ETL -->|Yes| DELTA[Delta Lake /<br/>Iceberg / Hudi]
     ETL -->|No| SPARK
-    
+
     style SPARK fill:#99ff99
     style PRESTO fill:#99ccff
     style DELTA fill:#ff99cc
