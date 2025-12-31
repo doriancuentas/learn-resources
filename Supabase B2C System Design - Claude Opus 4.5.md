@@ -2758,3 +2758,156 @@ flowchart LR
 **Document End**
 
 This design document provides a comprehensive foundation for implementing a secure, scalable multi-application B2C ecosystem with Supabase. The patterns and recommendations should be adapted to your specific requirements, threat model, and compliance needs.
+
+
+h1 Sources
+
+Here are the official documentation URLs and key resources for implementing this architecture:
+
+---
+
+## **Supabase Official Docs**
+
+| Topic | URL |
+|-------|-----|
+| Supabase Auth Overview | https://supabase.com/docs/guides/auth |
+| Auth with OAuth/Social Login | https://supabase.com/docs/guides/auth/social-login |
+| Auth with MFA (TOTP) | https://supabase.com/docs/guides/auth/auth-mfa |
+| JWT Configuration | https://supabase.com/docs/guides/auth/jwts |
+| Row Level Security (RLS) | https://supabase.com/docs/guides/database/postgres/row-level-security |
+| RLS Policies | https://supabase.com/docs/guides/auth/row-level-security |
+| Storage Policies | https://supabase.com/docs/guides/storage/security/access-control |
+| Edge Functions | https://supabase.com/docs/guides/functions |
+| Supabase Client (JS) | https://supabase.com/docs/reference/javascript/introduction |
+| Self-Hosting Supabase | https://supabase.com/docs/guides/self-hosting |
+| Auth Helpers (Next.js/SSR) | https://supabase.com/docs/guides/auth/server-side |
+| PKCE Flow | https://supabase.com/docs/guides/auth/sessions/pkce-flow |
+| Session Management | https://supabase.com/docs/guides/auth/sessions |
+| Custom Claims & Hooks | https://supabase.com/docs/guides/auth/auth-hooks |
+| GoTrue (Auth Server) GitHub | https://github.com/supabase/gotrue |
+
+---
+
+## **Authorization Solutions**
+
+### **OpenFGA (Zanzibar-style ReBAC)**
+| Resource | URL |
+|----------|-----|
+| Official Docs | https://openfga.dev/docs |
+| Getting Started | https://openfga.dev/docs/getting-started |
+| Modeling Guide | https://openfga.dev/docs/modeling |
+| GitHub Repository | https://github.com/openfga/openfga |
+| Playground | https://play.fga.dev |
+
+### **Permit.io**
+| Resource | URL |
+|----------|-----|
+| Official Docs | https://docs.permit.io |
+| Prisma Extension | https://docs.permit.io/sdk/permit-prisma-extension |
+| ReBAC Guide | https://docs.permit.io/how-to/build-policies/rebac/overview |
+| GitHub (PDP) | https://github.com/permitio/PDP |
+
+### **Ory Stack (Kratos, Keto, Oathkeeper)**
+| Resource | URL |
+|----------|-----|
+| Ory Kratos Docs | https://www.ory.sh/docs/kratos |
+| Ory Keto Docs | https://www.ory.sh/docs/keto |
+| Ory Oathkeeper Docs | https://www.ory.sh/docs/oathkeeper |
+| Keto GitHub | https://github.com/ory/keto |
+| Kratos GitHub | https://github.com/ory/kratos |
+
+### **Unkey (API Key Management)**
+| Resource | URL |
+|----------|-----|
+| Official Docs | https://www.unkey.com/docs |
+| Supabase Integration Guide | https://www.unkey.com/blog/secure-supabase-functions-using-unkey |
+| Next.js + Supabase Template | https://www.unkey.com/templates/nextjs-supabase-payasyougo |
+| GitHub Repository | https://github.com/unkeyed/unkey |
+| API Reference | https://www.unkey.com/docs/api-reference |
+
+---
+
+## **OAuth2 / OIDC / JWT Standards**
+
+| Topic | URL |
+|-------|-----|
+| OAuth 2.0 (RFC 6749) | https://datatracker.ietf.org/doc/html/rfc6749 |
+| OIDC Core Spec | https://openid.net/specs/openid-connect-core-1_0.html |
+| JWT (RFC 7519) | https://datatracker.ietf.org/doc/html/rfc7519 |
+| JWKS (RFC 7517) | https://datatracker.ietf.org/doc/html/rfc7517 |
+| PKCE (RFC 7636) | https://datatracker.ietf.org/doc/html/rfc7636 |
+| Token Exchange (RFC 8693) | https://datatracker.ietf.org/doc/html/rfc8693 |
+| Token Revocation (RFC 7009) | https://datatracker.ietf.org/doc/html/rfc7009 |
+| OAuth 2.0 Security BCP | https://datatracker.ietf.org/doc/html/draft-ietf-oauth-security-topics |
+
+---
+
+## **Google Zanzibar (ReBAC Foundation)**
+
+| Resource | URL |
+|----------|-----|
+| Original Paper | https://research.google/pubs/pub48190/ |
+| PDF Direct | https://storage.googleapis.com/pub-tools-public-publication-data/pdf/10683a8987dbf0c6d4edcafb9b4f05cc9de5974a.pdf |
+| Zanzibar Academy (Community) | https://zanzibar.academy |
+
+---
+
+## **Alternative Auth Solutions**
+
+| Solution | Docs URL | GitHub |
+|----------|----------|--------|
+| Hanko (Passkeys/PATs) | https://docs.hanko.io | https://github.com/teamhanko/hanko |
+| Stack Auth | https://docs.stack-auth.com | https://github.com/stack-auth/stack |
+| Lucia Auth | https://lucia-auth.com | https://github.com/lucia-auth/lucia |
+| Auth.js (NextAuth) | https://authjs.dev | https://github.com/nextauthjs/next-auth |
+| Keycloak | https://www.keycloak.org/documentation | https://github.com/keycloak/keycloak |
+
+---
+
+## **PostgreSQL Extensions (for DIY in Supabase)**
+
+| Extension | Purpose | URL |
+|-----------|---------|-----|
+| pgjwt | Sign/verify JWTs in Postgres | https://github.com/michelp/pgjwt |
+| pgcrypto | Hashing (bcrypt, etc.) | https://www.postgresql.org/docs/current/pgcrypto.html |
+| pg_net | HTTP requests from Postgres | https://github.com/supabase/pg_net |
+
+---
+
+## **Security Best Practices**
+
+| Topic | URL |
+|-------|-----|
+| OWASP Authentication Cheatsheet | https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html |
+| OWASP Session Management | https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html |
+| OWASP API Security Top 10 | https://owasp.org/API-Security/editions/2023/en/0x00-header/ |
+| OWASP JWT Cheatsheet | https://cheatsheetseries.owasp.org/cheatsheets/JSON_Web_Token_for_Java_Cheat_Sheet.html |
+| Argon2 (Password Hashing) | https://github.com/P-H-C/phc-winner-argon2 |
+
+---
+
+## **Mermaid Diagrams (Used in Doc)**
+
+| Resource | URL |
+|----------|-----|
+| Mermaid Official Docs | https://mermaid.js.org/intro/ |
+| Mermaid Live Editor | https://mermaid.live |
+| Sequence Diagram Syntax | https://mermaid.js.org/syntax/sequenceDiagram.html |
+| Flowchart Syntax | https://mermaid.js.org/syntax/flowchart.html |
+| ERD Syntax | https://mermaid.js.org/syntax/entityRelationshipDiagram.html |
+
+---
+
+## **Cloud Provider STS/Token Exchange**
+
+| Provider | URL |
+|----------|-----|
+| AWS STS AssumeRole | https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html |
+| AWS STS AssumeRoleWithWebIdentity | https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRoleWithWebIdentity.html |
+| GCP Workload Identity Federation | https://cloud.google.com/iam/docs/workload-identity-federation |
+| Snowflake OAuth | https://docs.snowflake.com/en/user-guide/oauth |
+| Snowflake Key Pair Auth | https://docs.snowflake.com/en/user-guide/key-pair-auth |
+
+---
+
+**Note:** The system design document I created synthesizes concepts from these official sources, combining OAuth2/OIDC standards with Supabase-specific implementation patterns and third-party authorization tools. For production implementation, always refer to the latest official documentation as APIs and features may change.
