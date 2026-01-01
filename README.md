@@ -1,31 +1,33 @@
 # Learning Resources Repository
 
-A curated collection of technical documentation covering data engineering, system design, infrastructure, and software architecture.
+A curated collection of technical documentation covering data engineering, system design, infrastructure, authentication security, and software architecture.
 
 ---
 
 ## 👨‍💻 Developer Profile
 
-Based on the comprehensive research and documentation in this repository, this collection represents the knowledge base of a **Senior Staff Engineer** with deep expertise spanning multiple domains:
+Based on the comprehensive research and documentation in this repository, this collection represents the knowledge base of a **Senior Staff Engineer / Principal Engineer** with deep expertise spanning multiple domains:
 
 **Core Competencies:**
 - **Data Engineering Architecture** - Expert in modern lakehouse architectures (Apache Iceberg, Delta Lake, Hudi), distributed query engines (Trino, Presto, Spark), and data catalog systems. Deep understanding of metadata management, partition discovery, and ACID transactions on object storage.
 - **Cloud-Native Infrastructure** - Extensive experience with AWS services (S3, Glue, Athena, Lambda, SQS), Snowflake data warehousing, and infrastructure-as-code using Terraform. Proven ability to design secure, scalable, and cost-effective cloud architectures.
 - **Distributed Systems & Microservices** - Advanced knowledge of service mesh architectures (Envoy, mTLS, SPIFFE/SPIRE), message queuing vs. streaming platforms (Kafka, Pulsar, RabbitMQ), and pipeline orchestration frameworks (Airflow, Temporal, Prefect).
+- **Authentication & Identity Security** - Specialized expertise in centralized authentication infrastructure, SSO ecosystems (same-domain and cross-domain), OAuth2/OIDC flows with PKCE, JWT-based session management, and MFA enforcement. Proficient in Ory stack (Kratos, Oathkeeper, Hydra), Traefik, Infisical secrets management, and OWASP-aligned security patterns for preventing BOLA, IDOR, session hijacking, token replay, and OAuth vulnerabilities. Implementation experience includes multi-domain SSO, PAT/API key systems, distributed authentication with sidecars and reverse proxies, and production-grade deployment with Docker Compose on VPS infrastructure.
 - **Full-Stack Development** - Proficient in modern application architectures using Supabase (PostgreSQL, RLS, Auth), Flutter for mobile development, and B2C authentication patterns including OAuth2.1, OIDC, and multi-factor authentication.
 - **AI-Assisted Development** - Deep experience with AI agent frameworks (BMAD-METHOD, Claude Code), LLM orchestration, and RAG patterns. Understands how to leverage AI for software development workflows from planning through deployment.
 
 **Engineering Philosophy:**
 - Emphasizes **separation of concerns** and **modularity** in system design
-- Values **security by default** with defense-in-depth strategies
+- Values **security by default** with defense-in-depth strategies and OWASP compliance
 - Advocates for **observable, debuggable systems** with comprehensive telemetry
 - Champions **data-driven decision making** with clear performance benchmarks
 - Believes in **documentation as code** with visual diagrams and comprehensive glossaries
+- Prioritizes **vendor-agnostic, open-source solutions** to avoid lock-in
 
 **Technical Depth:**
-This repository demonstrates mastery of 50+ years of distributed systems evolution, from relational databases through NoSQL to modern lakehouse architectures, combined with practical expertise in cloud-native development, security patterns, and AI-powered workflows. The breadth spans from low-level infrastructure (networking, certificates, IAM) to high-level application architecture (authentication flows, state management, user experience).
+This repository demonstrates mastery of 50+ years of distributed systems evolution, from relational databases through NoSQL to modern lakehouse architectures, combined with practical expertise in cloud-native development, security patterns, centralized authentication infrastructure, and AI-powered workflows. The breadth spans from low-level infrastructure (networking, certificates, IAM, OAuth flows) to high-level application architecture (authentication flows, state management, user experience, multi-tenant security).
 
-**Target Role:** Senior Staff Engineer / Principal Engineer / Solutions Architect specializing in data platforms, distributed systems, and cloud-native architectures.
+**Target Role:** Senior Staff Engineer / Principal Engineer / Solutions Architect specializing in data platforms, distributed systems, cloud-native architectures, and authentication/identity infrastructure.
 
 ---
 
@@ -156,6 +158,41 @@ Comprehensive guide to service mesh architecture solving the problems of secure 
 
 ---
 
+### 🔐 Authentication & Security
+
+#### [CentralizedAuthenticationInfra.md](./CentralizedAuthenticationInfra.md)
+**Centralized Authentication Infrastructure: From Fragmented Auth to Unified SSO**
+*34 diagrams | 60+ glossary terms*
+
+Comprehensive blueprint for startups transitioning from fragmented per-application authentication to unified centralized infrastructure. Covers architectural patterns (sidecar, reverse proxy, SDK-based), same-domain and cross-domain SSO implementation, credential management systems (PATs, API keys, service tokens), MFA enforcement, and token-based authentication for APIs and CLI tools. Technology stack centers on Ory Kratos for identity management, Ory Oathkeeper for access control, Ory Hydra for OAuth2/OIDC, and Traefik as ingress gateway. Includes detailed sequence diagrams, migration playbooks with rollback procedures, and operational guidance for monitoring production systems. Cost-effective, vendor-lock-in-free solution scaling from 1,000 to 100,000+ users.
+
+**Key Topics:** SSO patterns, OAuth2/OIDC flows, Ory stack (Kratos/Oathkeeper/Hydra), session management, MFA, PAT/API keys, sidecar vs reverse proxy, migration strategies, operational monitoring
+**[View Document](./CentralizedAuthenticationInfra.md)** | [Glossary](#centralized-auth-glossary) | [Architecture Diagrams](#auth-architecture)
+
+---
+
+#### [CentralizedAuth-TechSpec-Implementation.md](./CentralizedAuth-TechSpec-Implementation.md)
+**Centralized Authentication Infrastructure: Implementation-Ready Technical Specification**
+*20 diagrams | 82 glossary terms*
+
+Implementation-ready technical specification for deploying centralized authentication infrastructure across multiple domains. Provides complete configuration for Ory stack (Kratos, Hydra, Oathkeeper) on VPS infrastructure with Docker Compose, Infisical secrets management, Traefik ingress, Postgres, and Redis. Covers cross-domain SSO via OIDC, OWASP API Security Top 10 controls, Cloudflare integration (DNS, WAF, DDoS protection), 5-phase implementation timeline (4-5 weeks), and detailed operational runbooks including monitoring, backup/recovery, and incident response. Includes cost analysis ($20-50/month for 100-1K users), resource provisioning, deployment sequences, security layers, and risk mitigation strategies. Production-grade deployment guide with configuration examples, Docker Compose files, and complete infrastructure specifications.
+
+**Key Topics:** Docker Compose deployment, VPS infrastructure, Infisical secrets, Traefik configuration, cross-domain OIDC, PKCE flows, OWASP controls, rate limiting, session caching, Cloudflare WAF, monitoring (Prometheus/Grafana), backup/DR, cost optimization
+**[View Document](./CentralizedAuth-TechSpec-Implementation.md)** | [Glossary](#implementation-glossary) | [Deployment Diagrams](#deployment-flows)
+
+---
+
+#### [SSO-CrossCuttingOWASP.md](./SSO-CrossCuttingOWASP.md)
+**SSO Cross-Cutting OWASP Security Patterns**
+*11 diagrams | 43 glossary terms*
+
+OWASP-oriented security lens for SSO ecosystem design. Maps OWASP Top 10 and OWASP API Security Top 10 threats (BOLA, Broken Authentication, IDOR, session hijacking, token replay, OAuth vulnerabilities) to six critical implementation areas: inter-app SSO with shared sessions, distributed frontend/backend authentication with API gateways and microservices, H2H/S2S authentication with user delegation, MFA and social login with secure session lifecycle, PAT/API key systems for CLI and third-party integrations, and resource-based authorization using RLS and storage policies. Provides concrete OWASP Cheat Sheet-aligned implementation guidance, attack flow diagrams comparing insecure vs secure patterns, threat mitigation maps, and common pitfalls. Covers PKCE-protected OAuth flows, JWT-based service authentication, database-level authorization controls, session security, token confusion prevention, and open redirect defense.
+
+**Key Topics:** OWASP API Security, BOLA/IDOR prevention, OAuth security, session management, PKCE, CSRF/XSS mitigation, JWT security, API gateway authentication, RLS authorization, rate limiting, MFA enforcement
+**[View Document](./SSO-CrossCuttingOWASP.md)** | [Glossary](#owasp-glossary) | [Threat Diagrams](#threat-landscape)
+
+---
+
 ### 🛠️ Development & Tools
 
 #### [BMADToolsCheatsheet.md](./BMADToolsCheatsheet.md)
@@ -207,6 +244,48 @@ Critical examination of Claude Code's architecture covering 9 core components: A
 
 ---
 
+## Repository Summary
+
+### Overall Statistics
+- **Total Documents**: 18 technical guides
+- **Total Mermaid Diagrams**: 280+ professional diagrams
+- **Total Glossary Terms**: 850+ comprehensive definitions
+- **Total Glossary Links**: 1,700+ cross-references
+- **Total Lines of Content**: 25,000+ lines
+
+### Document Categories
+
+**Data Engineering & Pipelines** (7 documents)
+- 117+ diagrams covering data architectures, pipelines, and query systems
+- 400+ glossary terms for data engineering concepts
+- Topics: Iceberg, Delta Lake, Hive, Kafka, streaming, orchestration, Snowflake
+
+**System Design & Architecture** (4 documents)
+- 67+ diagrams for system architecture and auth flows
+- 200+ glossary terms for distributed systems and authentication
+- Topics: Supabase, service mesh, Flutter, B2C systems, microservices
+
+**Authentication & Security** (3 documents)
+- 65+ diagrams for authentication flows, security architecture, OWASP threats
+- 185+ glossary terms for auth, OAuth, OIDC, security patterns
+- Topics: Ory stack, SSO, OAuth2/OIDC, PKCE, MFA, PAT/API keys, OWASP controls, Traefik, Infisical
+
+**Development & Tools** (4 documents)
+- 46+ diagrams for development workflows and tooling
+- 150+ glossary terms for AI agents, infrastructure, and DevOps
+- Topics: BMAD Method, Claude Code, Terraform, infrastructure as code
+
+### Quality Standards Achieved
+
+All documents now include:
+- ✅ **Executive Summary** - Scaled appropriately to document length
+- ✅ **Valid Mermaid Diagrams** - All labels properly quoted, consistent styling
+- ✅ **Comprehensive Glossary** - Clear definitions with real-world analogies
+- ✅ **Complete Cross-Referencing** - Every term occurrence linked to glossary
+- ✅ **Professional Structure** - TOC, sections, references, and metadata
+
+---
+
 ## Mermaid Diagram Guidelines
 
 All documents in this repository follow these Mermaid diagram standards:
@@ -240,119 +319,47 @@ All documents in this repository follow these Mermaid diagram standards:
    ```
 
 4. **Clear component grouping**
-   - Separate Supabase components from external services
+   - Separate external services from internal components
    - Group related services in subgraphs
    - Add visual distinction with styling
-
-### Diagram Types Required
-
-Each document should include:
-- **Flowcharts**: Architecture and component relationships
-- **Sequence Diagrams**: User journeys, API interactions, authentication flows
-- **Component Diagrams**: System architecture and service boundaries
-- **ERD** (optional): Database schemas where relevant
-
-### Example: Valid Mermaid Diagram
-
-```mermaid
-flowchart TB
-    subgraph External["External Services"]
-        Auth["Auth Provider (OAuth2)"]
-        S3["S3 Storage"]
-    end
-
-    subgraph Supabase["Supabase Platform"]
-        SupaAuth["Supabase Auth"]
-        SupaDB["PostgreSQL + RLS"]
-        SupaStorage["Storage API"]
-    end
-
-    subgraph Application["Application Layer"]
-        Web["Web Client"]
-        Mobile["Mobile App"]
-    end
-
-    Web --> SupaAuth
-    Mobile --> SupaAuth
-    SupaAuth --> Auth
-    SupaStorage --> S3
-    Web --> SupaDB
-    Mobile --> SupaDB
-```
-
-```mermaid
-sequenceDiagram
-    participant User
-    participant App
-    participant Auth as "Auth Server"
-    participant API as "API Gateway"
-
-    User->>App: Click "Sign In"
-    App->>Auth: Redirect to /authorize
-    Auth->>User: Show consent screen
-    User->>Auth: Approve
-    Auth->>App: Redirect with code
-    App->>Auth: POST /token (code)
-    Auth->>App: Return access_token
-    App->>API: GET /api/resource (Bearer token)
-    API->>App: Return data
-    App->>User: Display resource
-```
-
----
-
-## Document Standards
-
-Each document in this repository includes:
-
-### 1. Executive Summary
-A concise overview scaled to document length:
-- Brief docs (< 5k words): 2-3 sentences
-- Medium docs (5-15k words): 1 paragraph (4-6 sentences)
-- Comprehensive docs (> 15k words): 2-3 paragraphs
-
-### 2. Glossary
-Every document contains its own glossary with:
-- **Term**: The concept or technology
-- **Short Description**: Clear, concise definition
-- **Use this when**: Real-world application scenario
-- **Like**: A useful simile or analogy
-
-Example:
-| Term | Description | Use this when | Like |
-|------|-------------|---------------|------|
-| **JWT** | JSON Web Token - compact, URL-safe token format | You need to securely transmit claims between parties without server-side session storage | A sealed, tamper-evident envelope where you can read the contents but can't modify them without breaking the seal |
-
-### 3. Comprehensive Diagrams
-Multiple Mermaid diagrams throughout showing:
-- System architecture
-- Data flows
-- Sequence of operations
-- Component relationships
 
 ---
 
 ## How to Use This Repository
 
 ### For Readers
-1. Check the index above to find topics of interest
+1. Check the document index to find topics of interest
 2. Click document links to read full content
 3. Each document is self-contained with glossary and diagrams
-4. Progress checkboxes help track what you've read (manually update)
+4. Use CLAUDE.md for contributing guidelines
 
 ### For Contributors
 1. Follow the Mermaid diagram guidelines strictly
 2. Include executive summary and glossary in all new documents
 3. Use PascalCase for filenames (e.g., `NewDocumentName.md`)
 4. Add new documents to this README index
-5. Update progress indicators when reviewing/updating docs
+5. See CLAUDE.md for complete documentation standards
 
-### Automatic Tracking
-To automatically list new files added to the repository:
+### Extracting Executive Summaries for Developer Profile Updates
+
+To update the Developer Profile based on all document content:
+
 ```bash
-# List all markdown files except README
-find . -name "*.md" -not -name "README.md" -type f | sort
+# Extract all executive summaries
+for file in *.md; do
+  if [[ "$file" != "README.md" && "$file" != "CLAUDE.md" && "$file" != "dietary"* ]]; then
+    echo "=== $file ==="
+    grep -A 20 "## Executive Summary" "$file" 2>/dev/null | grep -B 20 "^##" | head -n -1
+  fi
+done
 ```
+
+Then analyze the summaries to identify:
+1. Technical domains covered (data engineering, cloud, auth, etc.)
+2. Specific technologies mentioned (Kafka, Terraform, OAuth2, etc.)
+3. Architectural patterns emphasized
+4. Technical depth based on complexity
+5. Update the Developer Profile to reflect consolidated expertise
 
 ---
 
@@ -360,7 +367,8 @@ find . -name "*.md" -not -name "README.md" -type f | sort
 
 ```
 learn-resources/
-├── README.md                          # This file
+├── README.md                                    # This file
+├── CLAUDE.md                                    # Documentation standards
 ├── DataCatalogsAndFormatsV1.md
 ├── DataPipelineSystemDesign.md
 ├── DistributedQuerySystems.md
@@ -372,6 +380,9 @@ learn-resources/
 ├── SupabaseB2CSystemDesign-GPT5.2.md
 ├── ServiceMeshCommunication.md
 ├── FlutterAndSupabaseLearning.md
+├── CentralizedAuthenticationInfra.md
+├── CentralizedAuth-TechSpec-Implementation.md
+├── SSO-CrossCuttingOWASP.md
 ├── BMADToolsCheatsheet.md
 ├── BMADMethod.md
 ├── BumerangeToTerraform.md
@@ -381,51 +392,18 @@ learn-resources/
 
 ---
 
-## Repository Summary
-
-### Overall Statistics
-- **Total Documents**: 15 technical guides
-- **Total Mermaid Diagrams**: 230+ professional diagrams
-- **Total Glossary Terms**: 750+ comprehensive definitions
-- **Total Glossary Links**: 1,500+ cross-references
-- **Total Lines of Content**: 18,000+ lines
-
-### Document Categories
-
-**Data Engineering & Pipelines** (7 documents)
-- 117+ diagrams covering data architectures, pipelines, and query systems
-- 400+ glossary terms for data engineering concepts
-- Topics: Iceberg, Delta Lake, Hive, Kafka, streaming, orchestration, Snowflake
-
-**System Design & Architecture** (4 documents)
-- 67+ diagrams for system architecture and auth flows
-- 200+ glossary terms for distributed systems and authentication
-- Topics: Supabase, service mesh, Flutter, B2C systems, microservices
-
-**Development & Tools** (4 documents)
-- 46+ diagrams for development workflows and tooling
-- 150+ glossary terms for AI agents, infrastructure, and DevOps
-- Topics: BMAD Method, Claude Code, Terraform, infrastructure as code
-
-### Quality Standards Achieved
-
-All documents now include:
-- ✅ **Executive Summary** - Scaled appropriately to document length
-- ✅ **Valid Mermaid Diagrams** - All labels properly quoted, consistent styling
-- ✅ **Comprehensive Glossary** - Clear definitions with real-world analogies
-- ✅ **Complete Cross-Referencing** - Every term occurrence linked to glossary
-- ✅ **Professional Structure** - TOC, sections, references, and metadata
-
----
-
 ## Update Log
 
 | Date | Action | Documents |
 |------|--------|-----------|
 | 2026-01-01 | Repository initialized | All documents |
-| 2026-01-01 | File standardization - renamed to PascalCase | All 15 documents |
-| 2026-01-01 | Comprehensive review and enhancement completed | All 15 documents |
-| 2026-01-01 | Added 230+ Mermaid diagrams, 750+ glossary terms | All 15 documents |
+| 2026-01-01 | File standardization - renamed to PascalCase | All 18 documents |
+| 2026-01-01 | Comprehensive review and enhancement completed | All 15 original documents |
+| 2026-01-01 | Added 230+ Mermaid diagrams, 750+ glossary terms | All 15 original documents |
+| 2026-01-01 | Removed ephemeral progress tracking | README.md |
+| 2026-01-01 | Added centralized authentication infrastructure guides | CentralizedAuthenticationInfra.md, CentralizedAuth-TechSpec-Implementation.md, SSO-CrossCuttingOWASP.md |
+| 2026-01-01 | Enhanced with 50+ diagrams, 185+ auth/security glossary terms | Authentication & Security category |
+| 2026-01-01 | Updated developer profile with authentication/security expertise | README.md |
 
 ---
 
@@ -435,10 +413,12 @@ When adding or updating documents:
 1. Ensure all Mermaid diagrams follow the guidelines above
 2. Include executive summary appropriate to document size
 3. Create comprehensive glossary with all key terms
-4. Test all Mermaid diagrams render correctly in GitHub
-5. Update this README with new document entries
-6. Follow PascalCase naming convention
+4. Link ALL occurrences of glossary terms throughout document
+5. Test all Mermaid diagrams render correctly in GitHub
+6. Update this README with new document entries
+7. Follow PascalCase naming convention
+8. See CLAUDE.md for complete documentation standards
 
 ---
 
-**Note**: This is a living repository. As you read and update documents, manually check off items in the index above and update the progress indicators.
+**Note**: This is a living repository continuously updated with new technical research and documentation. For complete documentation standards and contribution guidelines, see [CLAUDE.md](./CLAUDE.md).

@@ -92,15 +92,35 @@ Every technical document in this repository MUST include:
   - **Technical Depth** (breadth and mastery demonstrated)
   - **Target Role** (appropriate seniority level)
 
+**How to Generate/Update**:
+
+Use grep to extract all executive summaries from documents:
+```bash
+# Extract executive summaries from all documents
+for file in *.md; do
+  echo "=== $file ==="
+  sed -n '/## Executive Summary/,/^##[^#]/p' "$file" | head -n -1
+done
+```
+
+**Analysis Steps**:
+1. Read all extracted executive summaries
+2. Identify technical domains covered (e.g., data engineering, cloud infrastructure, auth systems)
+3. Extract specific technologies mentioned (e.g., Apache Kafka, Terraform, OAuth2)
+4. Note architectural patterns and design principles emphasized
+5. Assess technical depth based on complexity and breadth of topics
+6. Update the Developer Profile to reflect the consolidated expertise
+
 **Update When**:
 - Adding documents in new technical domains
 - Significant expansion of existing domain coverage
+- After major content updates to existing documents
 
 ### Document Index Entry Format
 
 **Template for Each Document**:
 ```markdown
-#### ✅ [FileName.md](./FileName.md)
+#### [FileName.md](./FileName.md)
 **Document Title: Descriptive Subtitle**
 *X diagrams | Y glossary terms*
 
@@ -115,24 +135,12 @@ give readers enough context to decide if they need to read the full document.
 ```
 
 **Required Elements**:
-1. ✅ Status indicator (✅ completed, 🟡 in progress, 🔵 pending)
-2. Document link (relative path)
-3. Bold title with descriptive subtitle
-4. Italic metadata line (diagram count, glossary term count)
-5. 3-5 sentence summary paragraph
-6. Key Topics line with specific terms
-7. Navigation links: View Document, Glossary, key diagram sections
-
-### Progress Tracker
-
-**Update Requirements**:
-- Progress badge: `![Progress](https://img.shields.io/badge/Progress-X%2FY-color)`
-  - Colors: `red` (0-25%), `orange` (26-50%), `yellow` (51-75%), `brightgreen` (76-99%), `success` (100%)
-- Progress bar: ASCII visualization with blocks
-  ```
-  [████████████████████░░░░░░░░░░░░░░░░░░░] XX%
-  ```
-- Completion count: `X/Y documents (Z%)`
+1. Document link (relative path)
+2. Bold title with descriptive subtitle
+3. Italic metadata line (diagram count, glossary term count)
+4. 3-5 sentence summary paragraph
+5. Key Topics line with specific terms
+6. Navigation links: View Document, Glossary, key diagram sections
 
 ### Repository Summary Section
 
