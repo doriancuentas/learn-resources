@@ -4,6 +4,86 @@ A curated collection of technical documentation covering data engineering, syste
 
 ---
 
+## Document Index
+
+### [DataCatalogsAndFormatsV1.md](./DataCatalogsAndFormatsV1.md)
+Modern table formats and data catalog systems for lakehouse architectures with Iceberg, Delta Lake, and Hudi.
+`Tags: Iceberg, Delta Lake, Hudi, Data Catalog, ACID, MVCC, Time Travel`
+
+### [DataPipelineSystemDesign.md](./DataPipelineSystemDesign.md)
+Production pipeline orchestration comparing Airflow, Prefect, Dagster, and Temporal with failure handling and multi-tenancy.
+`Tags: Airflow, Prefect, Dagster, Temporal, DAG, Orchestration, State Management`
+
+### [DistributedQuerySystems.md](./DistributedQuerySystems.md)
+50-year evolution of distributed query engines from MapReduce to modern lakehouse architectures.
+`Tags: MPP, Columnar Storage, Query Optimization, Snowflake, BigQuery, Trino`
+
+### [HiveIcebergAutodiscovery.md](./HiveIcebergAutodiscovery.md)
+Partition discovery in Hive Metastore and modern Iceberg architectures with performance analysis.
+`Tags: Hive Metastore, Partition Discovery, Iceberg, AWS Glue, S3 LIST, Metadata`
+
+### [SnowflakeStorageIntegration.md](./SnowflakeStorageIntegration.md)
+Production Snowflake integration with AWS S3 using IAM roles and storage integrations.
+`Tags: Snowflake, S3, IAM, Storage Integration, STS Tokens, Virtual Warehouse`
+
+### [MessageQueueVsStreamProcessing.md](./MessageQueueVsStreamProcessing.md)
+Performance comparison of messaging infrastructure: SQS, RabbitMQ, Kafka, Pulsar, and Redis Streams.
+`Tags: SQS, RabbitMQ, Kafka, Pulsar, Redis, Event Sourcing, CQRS`
+
+### [PipelineOrchestrationFrameworks.md](./PipelineOrchestrationFrameworks.md)
+Open-source orchestration frameworks for event-driven systems by latency requirements.
+`Tags: Benthos, Camel, Kestra, Temporal, Prefect, Argo, EIP Patterns`
+
+### [SupabaseB2CSystemDesign-ClaudeOpus4.5.md](./SupabaseB2CSystemDesign-ClaudeOpus4.5.md)
+Startup B2C authentication architecture with Supabase including SSO, RLS, MFA, and OAuth2.1.
+`Tags: Supabase, OAuth2.1, OIDC, PKCE, SSO, RLS, JWT, MFA`
+
+### [SupabaseB2CSystemDesign-GPT5.2.md](./SupabaseB2CSystemDesign-GPT5.2.md)
+Enterprise Supabase architecture with multi-app SSO, fine-grained authorization, and credential lifecycle management.
+`Tags: Supabase, RLS, ReBAC, RBAC, ABAC, Policy Decision Points, OpenFGA`
+
+### [ServiceMeshCommunication.md](./ServiceMeshCommunication.md)
+Service mesh architecture with Envoy, SPIFFE/SPIRE, mTLS, and observability for microservices.
+`Tags: Envoy, SPIFFE, SPIRE, mTLS, Service Mesh, Sidecar, Observability`
+
+### [FlutterAndSupabaseLearning.md](./FlutterAndSupabaseLearning.md)
+9-week guide to building Flutter mobile apps with Supabase backend and AI integration.
+`Tags: Flutter, Supabase, OAuth, RLS, Real-time, Edge Functions, OpenAI`
+
+### [CentralizedAuthenticationInfra.md](./CentralizedAuthenticationInfra.md)
+Centralized authentication infrastructure with Ory stack, SSO, PAT/API keys, and MFA enforcement.
+`Tags: Ory Kratos, Oathkeeper, Hydra, SSO, OAuth2, OIDC, PAT, API Keys, MFA`
+
+### [CentralizedAuth-TechSpec-Implementation.md](./CentralizedAuth-TechSpec-Implementation.md)
+Implementation-ready technical spec for centralized auth infrastructure with Docker Compose and VPS deployment.
+`Tags: Ory Stack, Docker Compose, VPS, Traefik, Infisical, PKCE, Cloudflare, OWASP`
+
+### [SSO-CrossCuttingOWASP.md](./SSO-CrossCuttingOWASP.md)
+OWASP security patterns for SSO ecosystems preventing BOLA, IDOR, session hijacking, and OAuth vulnerabilities.
+`Tags: OWASP, BOLA, IDOR, CSRF, XSS, JWT Security, OAuth Security, Rate Limiting`
+
+### [BMADToolsCheatsheet.md](./BMADToolsCheatsheet.md)
+BMAD Method tools quick reference for AI-assisted development with agent commands and workflows.
+`Tags: BMAD Method, AI Agents, Cursor IDE, Gemini, ChatGPT, v0.dev, Lovable`
+
+### [BMADMethod.md](./BMADMethod.md)
+Technical deep-dive into BMAD-METHOD agent orchestration framework with provider-agnostic LLM interface.
+`Tags: BMAD Method, AI Agents, LLM Orchestration, RAG, OpenAI, Anthropic, Vertex`
+
+### [BumerangeToTerraform.md](./BumerangeToTerraform.md)
+Production Terraform infrastructure with three-layer separation, AWS provisioning, and migration safety.
+`Tags: Terraform, IaC, AWS, EC2, IAM, RDS, PostgreSQL, CloudTrail`
+
+### [ClaudeEcoplugs.md](./ClaudeEcoplugs.md)
+Critical analysis of Claude Code architecture covering 9 core components and enterprise comparisons.
+`Tags: Claude Code, AI Development, Workflows, Telemetry, RAG, OpenTelemetry, Temporal`
+
+### [UTMoniOSFindings.md](./UTMoniOSFindings.md)
+ARM64 virtualization and bootable Linux image creation on UTM for iOS.
+`Tags: UTM, iOS, ARM64, Virtualization, Alpine Linux, Ubuntu, GPT, EFI System Partition`
+
+---
+
 ## 👨‍💻 Developer Profile
 
 Based on the comprehensive research and documentation in this repository, this collection represents the knowledge base of a **Senior Staff Engineer / Principal Engineer** with deep expertise spanning multiple domains:
@@ -31,226 +111,7 @@ This repository demonstrates mastery of 50+ years of distributed systems evoluti
 
 ---
 
-## Document Index
-
-### 📊 Data Engineering & Pipelines
-
-#### [DataCatalogsAndFormatsV1.md](./DataCatalogsAndFormatsV1.md)
-**Modern Data Lakehouse: Catalogs, Table Formats & Metadata Management**
-*11 diagrams | 55+ glossary terms*
-
-Comprehensive guide to modern table formats (Apache Iceberg, Delta Lake, Hudi) and data catalog systems. Covers metadata architecture, ACID transactions on object storage, time travel queries, and multi-engine interoperability. Includes real-world case studies from Netflix, Apple, and LinkedIn showing production deployments and benefits. Essential for understanding lakehouse architectures and choosing the right table format for your data platform.
-
-**Key Topics:** Iceberg architecture, catalog implementations (Glue, Unity, Polaris, Nessie), schema evolution, partition management, MVCC, snapshot isolation
-**[View Document](./DataCatalogsAndFormatsV1.md)** | [Glossary](#data-catalogs-glossary) | [Architecture Diagrams](#iceberg-architecture)
-
----
-
-#### [DataPipelineSystemDesign.md](./DataPipelineSystemDesign.md)
-**Production Data Pipeline Orchestration: Architecture & Design Patterns**
-*26 diagrams | 71 glossary terms*
-
-Deep dive into data pipeline orchestration comparing Airflow, Prefect, Dagster, and Temporal. Covers architecture patterns, failure modes, state management, idempotency, backfill strategies, and multi-tenancy. Includes Pinterest's production architecture (Spinner, Monarch) and practical design principles for building reliable, scalable pipelines. Critical reading for data platform engineers.
-
-**Key Topics:** DAG execution, state machines, CeleryExecutor vs KubernetesExecutor, retry policies, concurrency control, adoption patterns
-**[View Document](./DataPipelineSystemDesign.md)** | [Glossary](#pipeline-glossary) | [Architecture Comparison](#orchestrator-comparison)
-
----
-
-#### [DistributedQuerySystems.md](./DistributedQuerySystems.md)
-**50 Years of Distributed Query Engines: From MapReduce to Modern Lakehouses**
-*20+ diagrams | 55 glossary terms*
-
-Comprehensive history and evolution of distributed query systems spanning 1970-2025. Traces the journey from System R through parallel databases, NoSQL, SQL-on-Hadoop (Hive, Presto, Spark), cloud-native engines (Snowflake, BigQuery), to modern lakehouses. Includes academic research foundations, CAP theorem trade-offs, and future directions (AI-optimized storage, learned indexes).
-
-**Key Topics:** MPP architectures, columnar storage, query optimization, separation of storage/compute, streaming analytics, federated queries
-**[View Document](./DistributedQuerySystems.md)** | [Glossary](#query-systems-glossary) | [Era Timeline](#evolution-timeline)
-
----
-
-#### [HiveIcebergAutodiscovery.md](./HiveIcebergAutodiscovery.md)
-**Partition Discovery & Metastore Architecture in Distributed Query Engines**
-*21 diagrams | 70+ glossary terms*
-
-Solves the partition discovery problem in data lakes. Explains Hive Metastore architecture, MSCK REPAIR TABLE mechanics, AWS Glue Crawler workflows, and how modern table formats (Iceberg, Delta Lake) eliminate partition discovery overhead. Includes performance analysis, small files problem, compaction strategies, and decision frameworks for technology selection.
-
-**Key Topics:** Hive Metastore schema, partition pruning, S3 LIST operations, metadata.json, manifest files, auto-discovery, hidden partitioning
-**[View Document](./HiveIcebergAutodiscovery.md)** | [Glossary](#hive-iceberg-glossary) | [Discovery Flow](#discovery-workflow)
-
----
-
-#### [SnowflakeStorageIntegration.md](./SnowflakeStorageIntegration.md)
-**Snowflake External Storage Integration: Secure AWS S3 Access Patterns**
-*16 diagrams | 30 glossary terms*
-
-Production-ready guide for integrating Snowflake with AWS S3 using IAM roles and storage integrations. Covers credential lifecycle, STS token vending, error handling, monitoring, and multi-region deployments. Includes security best practices, permission boundaries, and hands-on configuration examples. Essential for Snowflake platform engineers.
-
-**Key Topics:** Storage Integration objects, IAM trust policies, external stages, virtual warehouses, file format processing, role chaining
-**[View Document](./SnowflakeStorageIntegration.md)** | [Glossary](#snowflake-glossary) | [Security Architecture](#security-layers)
-
----
-
-#### [MessageQueueVsStreamProcessing.md](./MessageQueueVsStreamProcessing.md)
-**Message Queues vs Stream Processing: Performance, Cost & Architecture Trade-offs**
-*12 diagrams | 50+ glossary terms*
-
-Data-driven comparison of AWS SQS, RabbitMQ, Apache Kafka, Apache Pulsar, and Redis Streams. Includes throughput benchmarks (300K to 10M+ msgs/sec), latency analysis, cost estimates, and use-case recommendations. Covers event sourcing, CQRS, Lambda vs Kappa architectures, and real-time data pipelines. Critical for choosing the right messaging infrastructure.
-
-**Key Topics:** At-least-once vs exactly-once delivery, consumer groups, dead letter queues, backpressure, JSONata transformations
-**[View Document](./MessageQueueVsStreamProcessing.md)** | [Glossary](#messaging-glossary) | [Performance Comparison](#throughput-benchmarks)
-
----
-
-#### [PipelineOrchestrationFrameworks.md](./PipelineOrchestrationFrameworks.md)
-**Open-Source Pipeline Orchestration: Go & Python Frameworks for Event-Driven Systems**
-*12 diagrams | 60+ glossary terms*
-
-Comprehensive evaluation of 9+ orchestration frameworks: Benthos, Apache Camel, Kestra, Temporal, Prefect, Dagster, Argo Workflows, and more. Organized by latency requirements (low/medium/high), includes Kubernetes deployment patterns, state management models, and reliability semantics. Production-grade architecture recommendations.
-
-**Key Topics:** EIP patterns, DAG execution, workflow engines, KEDA autoscaling, message delivery semantics, event sourcing, cloud vs on-prem trade-offs
-**[View Document](./PipelineOrchestrationFrameworks.md)** | [Glossary](#orchestration-glossary) | [Framework Selection](#decision-matrix)
-
----
-
-### 🏗️ System Design & Architecture
-
-#### [SupabaseB2CSystemDesign-ClaudeOpus4.5.md](./SupabaseB2CSystemDesign-ClaudeOpus4.5.md)
-**Supabase B2C Identity Ecosystem: Multi-App Authentication Architecture**
-*13 diagrams | 33 glossary terms*
-
-Startup-focused guide for building consumer-facing applications with Supabase as identity provider. Covers JWT-based session management, multi-app SSO (same-domain and cross-domain), RLS authorization, MFA enrollment, social login, and PAT/API key management. Includes OAuth2.1 flows with PKCE and production security patterns.
-
-**Key Topics:** GoTrue architecture, access/refresh tokens, HttpOnly cookies, AAL claims, auth hooks, identity linking, service-to-service auth
-**[View Document](./SupabaseB2CSystemDesign-ClaudeOpus4.5.md)** | [Glossary](#supabase-auth-glossary) | [SSO Flows](#sso-diagrams)
-
----
-
-#### [SupabaseB2CSystemDesign-GPT5.2.md](./SupabaseB2CSystemDesign-GPT5.2.md)
-**Enterprise Supabase B2C System Design: Authorization & Multi-Tenancy**
-*16 diagrams | 64+ glossary terms*
-
-Advanced Supabase architecture covering four major problems: multi-app SSO, fine-grained authorization (RLS + external PDP), credential lifecycle management, and data plane bridging. Includes multi-tenancy data models, policy evaluation flows, token rotation workflows, and integration with OpenFGA, Unkey, and secrets managers. Enterprise-grade patterns.
-
-**Key Topics:** RLS policy tables, ReBAC, RBAC, ABAC, policy decision points, credential rotation, audit logging, break-glass access, pre-signed URLs
-**[View Document](./SupabaseB2CSystemDesign-GPT5.2.md)** | [Glossary](#enterprise-supabase-glossary) | [Authorization Flow](#authorization-diagrams)
-
----
-
-#### [ServiceMeshCommunication.md](./ServiceMeshCommunication.md)
-**Service Mesh: Secure, Observable Service-to-Service Communication**
-*21 diagrams | 50+ glossary terms*
-
-Comprehensive guide to service mesh architecture solving the problems of secure microservices communication. Covers Envoy proxy, SPIFFE/SPIRE identity, mTLS certificate lifecycle, external authorization, secrets management, observability (traces, metrics, logs), and traffic management (canary rollouts, circuit breakers). Production deployment patterns.
-
-**Key Topics:** Sidecar pattern, control plane vs data plane, xDS APIs, workload identity, trust bundles, policy evaluation, distributed tracing
-**[View Document](./ServiceMeshCommunication.md)** | [Glossary](#service-mesh-glossary) | [mTLS Flow](#mtls-handshake)
-
----
-
-#### [FlutterAndSupabaseLearning.md](./FlutterAndSupabaseLearning.md)
-**Flutter & Supabase: Building Modern Mobile Apps with GenAI**
-*17 diagrams | 50+ glossary terms*
-
-9-week learning guide for building production mobile apps with Flutter and Supabase backend. Covers OAuth authentication (deep linking, custom tabs), database schema design with RLS, real-time subscriptions, edge functions for AI integration, and SSE streaming. Includes platform configuration (iOS, Android), state management, and personalization workflows.
-
-**Key Topics:** Widget tree, go_router navigation, Postgres RLS policies, JWT validation, PKCE flow, OpenAI-compatible APIs, EventSource streaming
-**[View Document](./FlutterAndSupabaseLearning.md)** | [Glossary](#flutter-glossary) | [Architecture Overview](#app-architecture)
-
----
-
-### 🔐 Authentication & Security
-
-#### [CentralizedAuthenticationInfra.md](./CentralizedAuthenticationInfra.md)
-**Centralized Authentication Infrastructure: From Fragmented Auth to Unified SSO**
-*34 diagrams | 60+ glossary terms*
-
-Comprehensive blueprint for startups transitioning from fragmented per-application authentication to unified centralized infrastructure. Covers architectural patterns (sidecar, reverse proxy, SDK-based), same-domain and cross-domain SSO implementation, credential management systems (PATs, API keys, service tokens), MFA enforcement, and token-based authentication for APIs and CLI tools. Technology stack centers on Ory Kratos for identity management, Ory Oathkeeper for access control, Ory Hydra for OAuth2/OIDC, and Traefik as ingress gateway. Includes detailed sequence diagrams, migration playbooks with rollback procedures, and operational guidance for monitoring production systems. Cost-effective, vendor-lock-in-free solution scaling from 1,000 to 100,000+ users.
-
-**Key Topics:** SSO patterns, OAuth2/OIDC flows, Ory stack (Kratos/Oathkeeper/Hydra), session management, MFA, PAT/API keys, sidecar vs reverse proxy, migration strategies, operational monitoring
-**[View Document](./CentralizedAuthenticationInfra.md)** | [Glossary](#centralized-auth-glossary) | [Architecture Diagrams](#auth-architecture)
-
----
-
-#### [CentralizedAuth-TechSpec-Implementation.md](./CentralizedAuth-TechSpec-Implementation.md)
-**Centralized Authentication Infrastructure: Implementation-Ready Technical Specification**
-*20 diagrams | 82 glossary terms*
-
-Implementation-ready technical specification for deploying centralized authentication infrastructure across multiple domains. Provides complete configuration for Ory stack (Kratos, Hydra, Oathkeeper) on VPS infrastructure with Docker Compose, Infisical secrets management, Traefik ingress, Postgres, and Redis. Covers cross-domain SSO via OIDC, OWASP API Security Top 10 controls, Cloudflare integration (DNS, WAF, DDoS protection), 5-phase implementation timeline (4-5 weeks), and detailed operational runbooks including monitoring, backup/recovery, and incident response. Includes cost analysis ($20-50/month for 100-1K users), resource provisioning, deployment sequences, security layers, and risk mitigation strategies. Production-grade deployment guide with configuration examples, Docker Compose files, and complete infrastructure specifications.
-
-**Key Topics:** Docker Compose deployment, VPS infrastructure, Infisical secrets, Traefik configuration, cross-domain OIDC, PKCE flows, OWASP controls, rate limiting, session caching, Cloudflare WAF, monitoring (Prometheus/Grafana), backup/DR, cost optimization
-**[View Document](./CentralizedAuth-TechSpec-Implementation.md)** | [Glossary](#implementation-glossary) | [Deployment Diagrams](#deployment-flows)
-
----
-
-#### [SSO-CrossCuttingOWASP.md](./SSO-CrossCuttingOWASP.md)
-**SSO Cross-Cutting OWASP Security Patterns**
-*11 diagrams | 43 glossary terms*
-
-OWASP-oriented security lens for SSO ecosystem design. Maps OWASP Top 10 and OWASP API Security Top 10 threats (BOLA, Broken Authentication, IDOR, session hijacking, token replay, OAuth vulnerabilities) to six critical implementation areas: inter-app SSO with shared sessions, distributed frontend/backend authentication with API gateways and microservices, H2H/S2S authentication with user delegation, MFA and social login with secure session lifecycle, PAT/API key systems for CLI and third-party integrations, and resource-based authorization using RLS and storage policies. Provides concrete OWASP Cheat Sheet-aligned implementation guidance, attack flow diagrams comparing insecure vs secure patterns, threat mitigation maps, and common pitfalls. Covers PKCE-protected OAuth flows, JWT-based service authentication, database-level authorization controls, session security, token confusion prevention, and open redirect defense.
-
-**Key Topics:** OWASP API Security, BOLA/IDOR prevention, OAuth security, session management, PKCE, CSRF/XSS mitigation, JWT security, API gateway authentication, RLS authorization, rate limiting, MFA enforcement
-**[View Document](./SSO-CrossCuttingOWASP.md)** | [Glossary](#owasp-glossary) | [Threat Diagrams](#threat-landscape)
-
----
-
-### 🛠️ Development & Tools
-
-#### [BMADToolsCheatsheet.md](./BMADToolsCheatsheet.md)
-**BMAD Method Tools: Quick Reference for AI-Assisted Development**
-*7 diagrams | Comprehensive glossary*
-
-Phase-by-phase cheatsheet for the BMAD Method covering Planning (Gemini, ChatGPT for PRD generation), Development (Cursor IDE for coding), and Iteration (retrospectives). Includes agent commands (@analyst, @pm, @architect, @sm, @dev, @qa), external tools (v0.dev, Lovable), and project type tool stacks (full-stack, frontend, backend, brownfield).
-
-**Key Topics:** Agent commands, tool selection matrix, Gemini 1M+ token context, Cursor AI integration, workflow sequences, critical tips
-**[View Document](./BMADToolsCheatsheet.md)** | [Glossary](#bmad-tools-glossary) | [Phase Workflows](#workflow-diagrams)
-
----
-
-#### [BMADMethod.md](./BMADMethod.md)
-**BMAD-METHOD: AI Agent Framework for Agile Development**
-*7 diagrams | 18 glossary terms | 400+ links*
-
-Technical deep-dive into BMAD-METHOD agent orchestration framework. Covers architecture layers (orchestrator, agents, LLM interface, tools), provider-agnostic BaseLLM interface supporting OpenAI, Anthropic Claude, Google Vertex, and local models. Includes codebase flattening for RAG, prompt templates, context engineering, and Python/Node.js integration examples.
-
-**Key Topics:** Agent personas (Analyst, PM, Architect, SM, Dev, QA), LLM call flow, tool invocations, memory management, provider configuration
-**[View Document](./BMADMethod.md)** | [Glossary](#bmad-framework-glossary) | [Architecture Layers](#bmad-architecture)
-
----
-
-#### [BumerangeToTerraform.md](./BumerangeToTerraform.md)
-**Infrastructure as Code: Production-Ready Terraform Architecture**
-*13 diagrams | 27 glossary terms*
-
-Migration guide for building production Terraform infrastructure with three-layer separation (infrastructure, application, secrets). Covers AWS account portability, EC2 provisioning, IAM roles, Security Groups, RDS vs Docker PostgreSQL decisions, and migration safety checklists. Includes module composition patterns and requirement traceability.
-
-**Key Topics:** Remote state management, S3 backend, DynamoDB locking, IAM instance profiles, CloudTrail auditing, Cloudflare DNS integration
-**[View Document](./BumerangeToTerraform.md)** | [Glossary](#terraform-glossary) | [Architecture Layers](#terraform-architecture)
-
----
-
-#### [ClaudeEcoplugs.md](./ClaudeEcoplugs.md)
-**Claude Code Ecosystem: Critical Analysis of AI-Assisted Development Patterns**
-*23 diagrams | 19 glossary terms*
-
-Critical examination of Claude Code's architecture covering 9 core components: Agent Skills, Workflows, Tooling, Status Lines, Slash Commands, CLAUDE.md, Alternative Clients, Documentation, and Reality Check. Contrasts Claude Code patterns with enterprise practices (OpenTelemetry, Temporal, LangGraph). Includes paradigm comparison and architectural trade-offs.
-
-**Key Topics:** Skill composition, DAG workflows vs state machines, RPC tooling, telemetry, event buses, RAG patterns, glue code criticisms
-**[View Document](./ClaudeEcoplugs.md)** | [Glossary](#claude-code-glossary) | [Component Diagrams](#claude-architecture)
-
----
-
-#### [UTMoniOSFindings.md](./UTMoniOSFindings.md)
-**UTM on iOS: ARM64 Virtualization and Bootable Linux Image Creation**
-*10 diagrams | Technical findings document*
-
-Technical findings from running Linux VMs on UTM for iOS (iPhone). Documents what works (pre-installed cloud images, custom GPT+EFI images), what fails (ISO installers) and why ARM UEFI cannot boot ISO9660/El Torito/MBR formats. Includes complete step-by-step process for building a bootable Alpine Linux image from scratch using Docker on macOS, converting Ubuntu ISOs to bootable GPT images, and cloud-init seed disk creation. Performance comparison showing Alpine's ~50x lower resource usage vs Ubuntu on mobile devices.
-
-**Key Topics:** ARM UEFI boot requirements, GPT partition tables, EFI System Partition, GRUB for arm64-efi, Alpine linux-virt kernel, VirtIO drivers, cloud-init, kpartx, sgdisk
-**[View Document](./UTMoniOSFindings.md)** | [Build Process](#architecture-overview) | [Boot Requirements](#arm-uefi-boot-requirements)
-
----
-
-### 📝 Excluded from Current Review
+## 📝 Excluded from Current Review
 - ⏸️ **DietaryPlanningProtocol.md** - Comprehensive dietary planning with equations and sources (non-technical content, skipped per instructions)
 
 ---
@@ -417,6 +278,7 @@ learn-resources/
 | 2026-01-01 | Enhanced with 50+ diagrams, 185+ auth/security glossary terms | Authentication & Security category |
 | 2026-01-01 | Updated developer profile with authentication/security expertise | README.md |
 | 2026-01-26 | Added UTM on iOS findings - ARM64 virtualization, bootable image creation | UTMoniOSFindings.md |
+| 2026-01-26 | Restructured README with concise index format and tags | README.md |
 
 ---
 
@@ -428,7 +290,7 @@ When adding or updating documents:
 3. Create comprehensive glossary with all key terms
 4. Link ALL occurrences of glossary terms throughout document
 5. Test all Mermaid diagrams render correctly in GitHub
-6. Update this README with new document entries
+6. Update this README with new document entries (concise format with tags)
 7. Follow PascalCase naming convention
 8. See CLAUDE.md for complete documentation standards
 
