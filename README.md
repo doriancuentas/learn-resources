@@ -239,6 +239,17 @@ Critical examination of Claude Code's architecture covering 9 core components: A
 
 ---
 
+#### [UTMoniOSFindings.md](./UTMoniOSFindings.md)
+**UTM on iOS: ARM64 Virtualization and Bootable Linux Image Creation**
+*10 diagrams | Technical findings document*
+
+Technical findings from running Linux VMs on UTM for iOS (iPhone). Documents what works (pre-installed cloud images, custom GPT+EFI images), what fails (ISO installers) and why ARM UEFI cannot boot ISO9660/El Torito/MBR formats. Includes complete step-by-step process for building a bootable Alpine Linux image from scratch using Docker on macOS, converting Ubuntu ISOs to bootable GPT images, and cloud-init seed disk creation. Performance comparison showing Alpine's ~50x lower resource usage vs Ubuntu on mobile devices.
+
+**Key Topics:** ARM UEFI boot requirements, GPT partition tables, EFI System Partition, GRUB for arm64-efi, Alpine linux-virt kernel, VirtIO drivers, cloud-init, kpartx, sgdisk
+**[View Document](./UTMoniOSFindings.md)** | [Build Process](#architecture-overview) | [Boot Requirements](#arm-uefi-boot-requirements)
+
+---
+
 ### 📝 Excluded from Current Review
 - ⏸️ **DietaryPlanningProtocol.md** - Comprehensive dietary planning with equations and sources (non-technical content, skipped per instructions)
 
@@ -247,8 +258,8 @@ Critical examination of Claude Code's architecture covering 9 core components: A
 ## Repository Summary
 
 ### Overall Statistics
-- **Total Documents**: 18 technical guides
-- **Total Mermaid Diagrams**: 280+ professional diagrams
+- **Total Documents**: 19 technical guides
+- **Total Mermaid Diagrams**: 290+ professional diagrams
 - **Total Glossary Terms**: 850+ comprehensive definitions
 - **Total Glossary Links**: 1,700+ cross-references
 - **Total Lines of Content**: 25,000+ lines
@@ -270,10 +281,10 @@ Critical examination of Claude Code's architecture covering 9 core components: A
 - 185+ glossary terms for auth, OAuth, OIDC, security patterns
 - Topics: Ory stack, SSO, OAuth2/OIDC, PKCE, MFA, PAT/API keys, OWASP controls, Traefik, Infisical
 
-**Development & Tools** (4 documents)
-- 46+ diagrams for development workflows and tooling
+**Development & Tools** (5 documents)
+- 56+ diagrams for development workflows and tooling
 - 150+ glossary terms for AI agents, infrastructure, and DevOps
-- Topics: BMAD Method, Claude Code, Terraform, infrastructure as code
+- Topics: BMAD Method, Claude Code, Terraform, infrastructure as code, UTM/iOS virtualization
 
 ### Quality Standards Achieved
 
@@ -387,6 +398,7 @@ learn-resources/
 ├── BMADMethod.md
 ├── BumerangeToTerraform.md
 ├── ClaudeEcoplugs.md
+├── UTMoniOSFindings.md
 └── DietaryPlanningProtocol.md
 ```
 
@@ -404,6 +416,7 @@ learn-resources/
 | 2026-01-01 | Added centralized authentication infrastructure guides | CentralizedAuthenticationInfra.md, CentralizedAuth-TechSpec-Implementation.md, SSO-CrossCuttingOWASP.md |
 | 2026-01-01 | Enhanced with 50+ diagrams, 185+ auth/security glossary terms | Authentication & Security category |
 | 2026-01-01 | Updated developer profile with authentication/security expertise | README.md |
+| 2026-01-26 | Added UTM on iOS findings - ARM64 virtualization, bootable image creation | UTMoniOSFindings.md |
 
 ---
 
