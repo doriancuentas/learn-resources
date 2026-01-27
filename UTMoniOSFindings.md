@@ -443,10 +443,262 @@ flowchart TB
 
 ---
 
+## Networking Limitations
+
+### No LAN Access (NAT Only)
+
+UTM on iOS networking modes:
+
+| Mode | LAN Access | Internet | Requires |
+|------|------------|----------|----------|
+| Emulated VLAN (default) | No - NAT | Yes | Nothing |
+| Bridged | Yes | Yes | Jailbreak |
+| Host-only | No | No | Nothing |
+
+On non-jailbroken iOS (TrollStore), bridged networking is unavailable. The VM is behind NAT - it can reach the internet but **nothing can reach the VM directly**.
+
+```mermaid
+flowchart LR
+    subgraph iPhone["iPhone (Host)"]
+        UTM["UTM App"]
+        subgraph VM["Alpine VM"]
+            SSH["SSH :22"]
+        end
+    end
+
+    INTERNET["Internet"]
+    LAN["LAN Devices"]
+
+    VM -->|"Outbound OK"| INTERNET
+    LAN -.->|"Cannot reach"| VM
+    INTERNET -.->|"Cannot reach"| VM
+```
+
+**Solution:** Use Cloudflare Tunnel for inbound access.
+
+---
+
+## SSH Access via Cloudflare Tunnel
+
+Since LAN access is unavailable, use [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/) to expose SSH over the internet.
+
+```mermaid
+flowchart LR
+    subgraph iPhone["iPhone"]
+        subgraph Alpine["Alpine VM"]
+            SSHD["sshd :22"]
+            CFD["cloudflared"]
+        end
+    end
+
+    subgraph Cloudflare["Cloudflare Edge"]
+        TUNNEL["Tunnel Endpoint"]
+        DNS["casiix.domain.com"]
+    end
+
+    subgraph Client["Your Mac"]
+        SSHCLIENT["ssh client"]
+        CFDCLIENT["cloudflared proxy"]
+    end
+
+    CFD -->|"Outbound connection"| TUNNEL
+    DNS --> TUNNEL
+    CFDCLIENT -->|"ProxyCommand"| TUNNEL
+    SSHCLIENT --> CFDCLIENT
+    TUNNEL -->|"Routes to"| SSHD
+```
+
+### Prerequisites
+
+- Cloudflare account (free)
+- Domain with DNS on Cloudflare
+- `cloudflared` on both Alpine VM and client machine
+
+### Setup on Alpine VM
+
+#### 1. Install cloudflared
+
+```bash
+sudo apk add cloudflared
+```
+
+If not in repos, download binary:
+
+```bash
+sudo wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64 -O /usr/local/bin/cloudflared
+sudo chmod +x /usr/local/bin/cloudflared
+```
+
+#### 2. Authenticate with Cloudflare
+
+```bash
+cloudflared tunnel login
+```
+
+This prints a URL. Open it in a browser, log into Cloudflare, authorize. A `cert.pem` downloads - if it doesn't auto-complete:
+
+```bash
+mkdir -p ~/.cloudflared
+cat > ~/.cloudflared/cert.pem << 'EOF'
+<paste cert.pem content>
+EOF
+chmod 600 ~/.cloudflared/cert.pem
+```
+
+**Important:** No extra blank lines in cert.pem - causes parsing errors.
+
+#### 3. Create Tunnel
+
+```bash
+cloudflared tunnel create <tunnel-name>
+```
+
+Outputs a UUID (tunnel ID) and creates `~/.cloudflared/<UUID>.json`.
+
+#### 4. Route DNS
+
+```bash
+cloudflared tunnel route dns <tunnel-name> <subdomain.yourdomain.com>
+```
+
+This auto-creates a CNAME record in Cloudflare DNS.
+
+#### 5. Configure Tunnel
+
+```bash
+sudo mkdir -p /etc/cloudflared
+sudo tee /etc/cloudflared/config.yml << 'EOF'
+tunnel: <tunnel-name>
+credentials-file: /home/<user>/.cloudflared/<UUID>.json
+
+ingress:
+  - hostname: <subdomain.yourdomain.com>
+    service: ssh://localhost:22
+  - service: http_status:404
+EOF
+```
+
+#### 6. Run Tunnel
+
+Foreground (for testing):
+
+```bash
+cloudflared tunnel run <tunnel-name>
+```
+
+As OpenRC service (persistent):
+
+```bash
+sudo tee /etc/init.d/cloudflared << 'EOF'
+#!/sbin/openrc-run
+
+name="cloudflared"
+description="Cloudflare Tunnel"
+command="/usr/bin/cloudflared"
+command_args="tunnel run <tunnel-name>"
+command_user="<user>"
+pidfile="/run/${RC_SVCNAME}.pid"
+command_background="yes"
+
+depend() {
+    need net
+    after firewall
+}
+EOF
+
+sudo chmod +x /etc/init.d/cloudflared
+sudo rc-update add cloudflared default
+sudo rc-service cloudflared start
+```
+
+### Connect from Client (Mac)
+
+Install cloudflared:
+
+```bash
+brew install cloudflared
+```
+
+Connect via SSH:
+
+```bash
+ssh -o ProxyCommand="cloudflared access ssh --hostname <subdomain.yourdomain.com>" user@<subdomain.yourdomain.com> -i ~/.ssh/your_key
+```
+
+Add to `~/.ssh/config` for convenience:
+
+```
+Host alpine-ios
+    HostName <subdomain.yourdomain.com>
+    User <user>
+    IdentityFile ~/.ssh/your_key
+    ProxyCommand cloudflared access ssh --hostname %h
+```
+
+Then just: `ssh alpine-ios`
+
+### What Worked / What Failed
+
+| Step | Status | Notes |
+|------|--------|-------|
+| `apk add cloudflared` | Works | Available in Alpine community repos |
+| `cloudflared tunnel login` | Works | Browser-based OAuth flow |
+| cert.pem with extra lines | Failed | "missing token" error - remove blank lines |
+| `cloudflared tunnel create` | Works | After fixing cert.pem |
+| `cloudflared tunnel route dns` | Works | Auto-creates CNAME |
+| `cloudflared tunnel run` | Works | SSH accessible via tunnel |
+| SSH via ProxyCommand | Works | Full remote access achieved |
+
+---
+
+## UTM iOS Limitations
+
+### Clipboard
+
+| Feature | Status | Requirements |
+|---------|--------|--------------|
+| Text clipboard | Limited | SPICE display + UTM Guest Tools |
+| File clipboard | No | Not supported |
+| Image clipboard | No | Not supported |
+
+Clipboard requires:
+1. SPICE display mode (not VGA)
+2. [UTM Guest Tools](https://docs.getutm.app/guest-support/linux/) installed in VM
+3. `spice-vdagent` running
+
+For Alpine:
+
+```bash
+sudo apk add spice-vdagent
+sudo rc-update add spice-vdagentd default
+sudo rc-service spice-vdagentd start
+```
+
+**Practical workaround:** Use SSH tunnel - your Mac terminal has full clipboard support.
+
+### Console Display Issues
+
+The UTM iOS console may not refresh properly. Symptoms:
+- Lines don't clear after commands
+- Display corruption
+
+Fixes:
+
+```bash
+reset
+clear
+export TERM=xterm
+```
+
+**Better solution:** SSH in via Cloudflare Tunnel - uses your Mac terminal instead.
+
+---
+
 ## References
 
 - [UTM for iOS](https://getutm.app/) - Virtual machines for iPhone/iPad
 - [UTM Documentation](https://docs.getutm.app/) - Official docs
+- [UTM Guest Support](https://docs.getutm.app/guest-support/linux/) - Guest tools installation
 - [Alpine Linux](https://alpinelinux.org/) - Lightweight Linux distribution
 - [Alpine Wiki](https://wiki.alpinelinux.org/) - Alpine documentation
 - [Ubuntu Cloud Images](https://cloud-images.ubuntu.com/) - Pre-built Ubuntu images
@@ -456,3 +708,5 @@ flowchart TB
 - [GPT fdisk (sgdisk)](https://www.rodsbooks.com/gdisk/) - GPT partitioning tool
 - [GRUB Manual](https://www.gnu.org/software/grub/manual/grub/grub.html) - GRUB bootloader
 - [VirtIO Specification](https://docs.oasis-open.org/virtio/virtio/v1.1/virtio-v1.1.html) - Virtual I/O devices
+- [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/) - Secure tunnel for inbound access
+- [cloudflared](https://github.com/cloudflare/cloudflared) - Cloudflare Tunnel client
