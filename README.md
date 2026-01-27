@@ -78,10 +78,6 @@ Production Terraform infrastructure with three-layer separation, AWS provisionin
 Critical analysis of Claude Code architecture covering 9 core components and enterprise comparisons.
 `Tags: Claude Code, AI Development, Workflows, Telemetry, RAG, OpenTelemetry, Temporal`
 
-### [UTMoniOSFindings.md](./UTMoniOSFindings.md)
-ARM64 virtualization and bootable Linux image creation on UTM for iOS.
-`Tags: UTM, iOS, ARM64, Virtualization, Alpine Linux, Ubuntu, GPT, EFI System Partition`
-
 ---
 
 ## 👨‍💻 Developer Profile
