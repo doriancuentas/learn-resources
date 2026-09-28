@@ -62,6 +62,14 @@ Implementation-ready technical spec for centralized auth infrastructure with Doc
 OWASP security patterns for SSO ecosystems preventing BOLA, IDOR, session hijacking, and OAuth vulnerabilities.
 `Tags: OWASP, BOLA, IDOR, CSRF, XSS, JWT Security, OAuth Security, Rate Limiting`
 
+### [OAuthFlowAndDevProblem.md](./OAuthFlowAndDevProblem.md)
+Snowflake MCP v2 OAuth architecture: wire-level authorization flows, token broker dynamics, SPIFFE mesh identity, and devapp local testing workarounds with an offline interactive component map ([OAuthFlowAndDevProblemOffline.html](./OAuthFlowAndDevProblemOffline.html)).
+`Tags: Snowflake, OAuth2, MCP, SPIFFE, Envoy, Token Broker, DevApp, Mesh Identity, FastMCP`
+
+### [OAuthLibraryReview.md](./OAuthLibraryReview.md)
+Source code review of the shared in-process OAuth library for Snowflake MCP v2 covering token manager, Tink AES256-GCM encryption, SQLite/SDS storage engines, and zero-trust security model.
+`Tags: OAuth2, FastMCP, Snowflake, Token Management, Tink Encryption, SDS, SQLite, SPIFFE, Zero Trust`
+
 ### [BMADToolsCheatsheet.md](./BMADToolsCheatsheet.md)
 BMAD Method tools quick reference for AI-assisted development with agent commands and workflows.
 `Tags: BMAD Method, AI Agents, Cursor IDE, Gemini, ChatGPT, v0.dev, Lovable`
@@ -88,7 +96,7 @@ Based on the comprehensive research and documentation in this repository, this c
 - **Data Engineering Architecture** - Expert in modern lakehouse architectures (Apache Iceberg, Delta Lake, Hudi), distributed query engines (Trino, Presto, Spark), and data catalog systems. Deep understanding of metadata management, partition discovery, and ACID transactions on object storage.
 - **Cloud-Native Infrastructure** - Extensive experience with AWS services (S3, Glue, Athena, Lambda, SQS), Snowflake data warehousing, and infrastructure-as-code using Terraform. Proven ability to design secure, scalable, and cost-effective cloud architectures.
 - **Distributed Systems & Microservices** - Advanced knowledge of service mesh architectures (Envoy, mTLS, SPIFFE/SPIRE), message queuing vs. streaming platforms (Kafka, Pulsar, RabbitMQ), and pipeline orchestration frameworks (Airflow, Temporal, Prefect).
-- **Authentication & Identity Security** - Specialized expertise in centralized authentication infrastructure, SSO ecosystems (same-domain and cross-domain), OAuth2/OIDC flows with PKCE, JWT-based session management, and MFA enforcement. Proficient in Ory stack (Kratos, Oathkeeper, Hydra), Traefik, Infisical secrets management, and OWASP-aligned security patterns for preventing BOLA, IDOR, session hijacking, token replay, and OAuth vulnerabilities. Implementation experience includes multi-domain SSO, PAT/API key systems, distributed authentication with sidecars and reverse proxies, and production-grade deployment with Docker Compose on VPS infrastructure.
+- **Authentication & Identity Security** - Specialized expertise in centralized authentication infrastructure, SSO ecosystems (same-domain and cross-domain), OAuth2/OIDC flows with PKCE, JWT-based session management, and MFA enforcement. Proficient in Model Context Protocol (MCP) OAuth2 architectures, token broker design, mesh-verified SPIFFE workload identities, Tink encryption at rest, and zero-trust token lifecycle management. Deep experience with Ory stack (Kratos, Oathkeeper, Hydra), Traefik, Infisical secrets management, and OWASP-aligned security patterns for preventing BOLA, IDOR, session hijacking, token replay, and OAuth vulnerabilities. Implementation experience includes multi-domain SSO, PAT/API key systems, distributed authentication with sidecars and reverse proxies, and production-grade deployment with Docker Compose on VPS infrastructure.
 - **Full-Stack Development** - Proficient in modern application architectures using Supabase (PostgreSQL, RLS, Auth), Flutter for mobile development, and B2C authentication patterns including OAuth2.1, OIDC, and multi-factor authentication.
 - **AI-Assisted Development** - Deep experience with AI agent frameworks (BMAD-METHOD, Claude Code), LLM orchestration, and RAG patterns. Understands how to leverage AI for software development workflows from planning through deployment.
 
@@ -115,11 +123,11 @@ This repository demonstrates mastery of 50+ years of distributed systems evoluti
 ## Repository Summary
 
 ### Overall Statistics
-- **Total Documents**: 19 technical guides
-- **Total Mermaid Diagrams**: 290+ professional diagrams
+- **Total Documents**: 20 technical guides (plus companion interactive HTML map)
+- **Total Mermaid Diagrams**: 390+ professional diagrams
 - **Total Glossary Terms**: 850+ comprehensive definitions
 - **Total Glossary Links**: 1,700+ cross-references
-- **Total Lines of Content**: 25,000+ lines
+- **Total Lines of Content**: 27,000+ lines
 
 ### Document Categories
 
@@ -133,15 +141,15 @@ This repository demonstrates mastery of 50+ years of distributed systems evoluti
 - 200+ glossary terms for distributed systems and authentication
 - Topics: Supabase, service mesh, Flutter, B2C systems, microservices
 
-**Authentication & Security** (3 documents)
-- 65+ diagrams for authentication flows, security architecture, OWASP threats
-- 185+ glossary terms for auth, OAuth, OIDC, security patterns
-- Topics: Ory stack, SSO, OAuth2/OIDC, PKCE, MFA, PAT/API keys, OWASP controls, Traefik, Infisical
+**Authentication & Security** (5 documents)
+- 130+ diagrams for authentication flows, security architecture, OWASP threats, and token broker dynamics
+- 190+ glossary terms for auth, OAuth, OIDC, security patterns
+- Topics: Ory stack, SSO, OAuth2/OIDC, PKCE, MFA, PAT/API keys, OWASP controls, Traefik, Infisical, Snowflake MCP v2 OAuth, token broker, SPIFFE mesh identity, Tink encryption, FastMCP
 
-**Development & Tools** (5 documents)
-- 56+ diagrams for development workflows and tooling
+**Development & Tools** (4 documents)
+- 46+ diagrams for development workflows and tooling
 - 150+ glossary terms for AI agents, infrastructure, and DevOps
-- Topics: BMAD Method, Claude Code, Terraform, infrastructure as code, UTM/iOS virtualization
+- Topics: BMAD Method, Claude Code, Terraform, infrastructure as code
 
 ### Quality Standards Achieved
 
@@ -251,11 +259,13 @@ learn-resources/
 ├── CentralizedAuthenticationInfra.md
 ├── CentralizedAuth-TechSpec-Implementation.md
 ├── SSO-CrossCuttingOWASP.md
+├── OAuthFlowAndDevProblem.md
+├── OAuthFlowAndDevProblemOffline.html
+├── OAuthLibraryReview.md
 ├── BMADToolsCheatsheet.md
 ├── BMADMethod.md
 ├── BumerangeToTerraform.md
 ├── ClaudeEcoplugs.md
-├── UTMoniOSFindings.md
 └── DietaryPlanningProtocol.md
 ```
 
@@ -275,6 +285,7 @@ learn-resources/
 | 2026-01-01 | Updated developer profile with authentication/security expertise | README.md |
 | 2026-01-26 | Added UTM on iOS findings - ARM64 virtualization, bootable image creation | UTMoniOSFindings.md |
 | 2026-01-26 | Restructured README with concise index format and tags | README.md |
+| 2026-09-28 | Added Snowflake MCP v2 OAuth flow, dev problem, and shared library review guides | OAuthFlowAndDevProblem.md, OAuthFlowAndDevProblemOffline.html, OAuthLibraryReview.md |
 
 ---
 
